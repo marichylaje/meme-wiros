@@ -3,8 +3,18 @@
 // example, to import the interface below do:
 //
 // import { User } from 'path/to/interfaces';
+// src/interfaces/index.ts
 
-export type User = {
+export interface User {
   id: number;
-  name: string;
-};
+  nombreColegio: string;
+  nombreCurso: string;
+  email: string;
+  contraseña: string;
+  templateId: string;
+  color: {
+    color1: string;
+    color2: string;
+    color3: string;
+  };
+}

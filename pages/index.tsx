@@ -1,13 +1,24 @@
-import Link from "next/link";
-import Layout from "../components/Layout";
+import ColorPicker from '../components/ColorPicker';
+import FlagEditor from '../components/FlagEditor';
+import Layout from '../components/Layout';
+import { useColor } from '../context/ColorContext';
 
-const IndexPage = () => (
-  <Layout title="Home | Next.js + TypeScript Example">
-    <h1>Hello Next.js 👋</h1>
-    <p>
-      <Link href="/about">About</Link>
-    </p>
-  </Layout>
-);
+export default function Home() {
+  const { color } = useColor();
 
-export default IndexPage;
+  return (
+    <Layout>
+      <h1>Selector de Color</h1>
+      <ColorPicker />
+
+      <p style={{ marginTop: '2rem' }}>
+        Color seleccionado:{' '}
+        <span style={{ fontWeight: 'bold', color: color !== 'transparent' ? color : '#000' }}>
+          {color}
+        </span>
+      </p>
+      <h1>Editor de Banderas</h1>
+      <FlagEditor />
+    </Layout>
+  );
+}

@@ -1,32 +1,18 @@
-import React, { ReactNode } from "react";
-import Link from "next/link";
-import Head from "next/head";
+// src/components/Layout.tsx
+import React, { ReactNode } from 'react';
+import Navbar from './Navbar';
 
 type Props = {
-  children?: ReactNode;
-  title?: string;
+  children: ReactNode;
 };
 
-const Layout = ({ children, title = "This is the default title" }: Props) => (
-  <div>
-    <Head>
-      <title>{title}</title>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    </Head>
-    <header>
-      <nav>
-        <Link href="/">Home</Link> | <Link href="/about">About</Link> |{" "}
-        <Link href="/users">Users List</Link> |{" "}
-        <a href="/api/users">Users API</a>
-      </nav>
-    </header>
-    {children}
-    <footer>
-      <hr />
-      <span>I'm here to stay (Footer)</span>
-    </footer>
-  </div>
-);
+const Layout = ({ children }: Props) => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar/>
+      <main className="flex-grow p-6 bg-gray-100">{children}</main>
+    </div>
+  );
+};
 
 export default Layout;
