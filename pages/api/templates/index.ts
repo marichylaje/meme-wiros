@@ -20,7 +20,7 @@ export default function handler(
     const isDirectory = fs.lstatSync(folderPath).isDirectory();
     if (!isDirectory) return null;
 
-    // Contamos los archivos imgX.png (no fullimg.png)
+    // Contamos los archivos imgX.png (no borders.png)
     const files = fs.readdirSync(folderPath);
     const sideImages = files.filter((file) => /^img\d+\.png$/.test(file));
 
