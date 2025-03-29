@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import { useRouter } from 'next/router';
-import { useUser } from '../context/UserContext';
+import { signIn } from 'next-auth/react';
 
 const FormWrapper = styled.div`
   max-width: 400px;
@@ -34,13 +34,16 @@ const Button = styled.button`
   }
 `;
 
+const ErrorMsg = styled.p`
+  color: #dc2626;
+  font-weight: bold;
+  text-align: center;
+`;
+
 export default function Login() {
   const router = useRouter();
-  const { login } = useUser();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -50,28 +53,18 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const res = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+    const res = await signIn('credentials', {
+      redirect: false,
+      email: formData.email,
+      password: formData.password,
+    });
 
-      const data = await res.json();
-      console.log(data);
-
-      if (res.ok) {
-        alert('Inicio de sesión exitoso!');
-        login(data.token); // 👈 pasamos el token aquí
-        router.push('/'); // Redirige a la página principal después del login
-      } else {
-        alert(data.message || 'Error en el inicio de sesión');
-      }
-    } catch (error) {
-      console.error('Error:', error);
+    if (res?.ok) {
+      router.push('/');
+    } else {
+      setError('Correo o contraseña incorrectos');
     }
   };
-  
 
   return (
     <Layout>
@@ -94,6 +87,7 @@ export default function Login() {
             onChange={handleChange}
             required
           />
+          {error && <ErrorMsg>{error}</ErrorMsg>}
           <Button type="submit">Iniciar sesión</Button>
         </form>
       </FormWrapper>

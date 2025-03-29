@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useUser } from '../context/UserContext';
+import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
@@ -46,7 +46,7 @@ const Button = styled.button`
 `;
 
 const Navbar = () => {
-  const { isLoggedIn, logout } = useUser();
+  const { data: session } = useSession();
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
@@ -57,8 +57,8 @@ const Navbar = () => {
         <Menu>
           <a href="/about">Sobre Nosotros</a>
 
-          {isLoggedIn ? (
-            <Button onClick={logout}>Salir</Button>
+          {session?.user ? (
+            <Button onClick={() => signOut()}>Salir</Button>
           ) : (
             <>
               <Button onClick={() => setShowLogin(true)}>Ingresar</Button>

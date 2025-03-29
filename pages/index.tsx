@@ -5,8 +5,7 @@ import PreviewSection from '../components/PreviewSection';
 import FlagEditor from '../components/FlagEditor';
 import styled from 'styled-components';
 import toast from 'react-hot-toast';
-import { useUser } from '../context/UserContext';
-import { getSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 
 const PageWrapper = styled.div`
   display: flex;
@@ -67,7 +66,7 @@ const SelectButton = styled.button`
 `;
 
 const HomePage = () => {
-  const { user } = useUser(); // <-- accedemos al usuario
+  const { data: session, status } = useSession();
   const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([]);
   const [currentTemplateName, setCurrentTemplateName] = useState('');
   const [currentSides, setCurrentSides] = useState(0);
@@ -107,14 +106,11 @@ const HomePage = () => {
   };
 
   const handleSubmitDesign = async () => {
-    const session = await getSession()
-    console.log({session})
-    console.log({user})
     if (!session || !session.user?.id) {
-      toast.error("Debes iniciar sesión para guardar el diseño.")
-      return
+      toast.error("Debes iniciar sesión para guardar el diseño.");
+      return;
     }
-
+  
     try {
       const res = await fetch('/api/design/create', {
         method: 'POST',
@@ -129,7 +125,7 @@ const HomePage = () => {
           fontFamily,
         }),
       });
-
+  
       if (res.ok) {
         toast.success('Diseño guardado con éxito');
       } else {
@@ -140,6 +136,7 @@ const HomePage = () => {
       toast.error('Error de conexión al servidor');
     }
   };
+  
 
   return (
     <PageWrapper>

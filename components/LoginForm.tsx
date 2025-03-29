@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { signIn } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 const Form = styled.form`
   display: flex;
@@ -40,20 +42,19 @@ const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+    const res = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
     });
 
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.error || 'Error al iniciar sesión');
-      return;
+    if (res?.ok) {
+      toast.success('Sesión iniciada');
+      onSuccess();
+    } else {
+      setError('Credenciales inválidas');
+      toast.error('Error al iniciar sesión');
     }
-    const data = await res.json();
-    localStorage.setItem('token', data.token);
-    onSuccess();
   };
 
   return (
