@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import TemplatesList from '../components/TemplatesList';
 import PreviewSection from '../components/PreviewSection';
-import styled from 'styled-components';
 import FlagEditor from '../components/FlagEditor';
+import styled from 'styled-components';
+import toast from 'react-hot-toast';
+import { useUser } from '../context/UserContext';
+import { getSession } from 'next-auth/react';
 
 const PageWrapper = styled.div`
   display: flex;
@@ -46,7 +49,25 @@ const SidebarRight = styled.div`
   overflow-y: auto;
 `;
 
+const SelectButton = styled.button`
+  margin: 2rem auto 1rem;
+  padding: 1rem 2rem;
+  background-color: #10b981;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+
+  &:hover {
+    background-color: #059669;
+  }
+`;
+
 const HomePage = () => {
+  const { user } = useUser(); // <-- accedemos al usuario
   const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([]);
   const [currentTemplateName, setCurrentTemplateName] = useState('');
   const [currentSides, setCurrentSides] = useState(0);
@@ -54,7 +75,7 @@ const HomePage = () => {
   const [customText, setCustomText] = useState('');
   const [fontFamily, setFontFamily] = useState('Arial');
   const [textColor, setTextColor] = useState('#FFFFFF');
-  const [textPosition, setTextPosition] = useState({ x: 150, y: 150 });
+  const [textPosition, setTextPosition] = useState({ x: 0.5, y: 0.5 }); // relativo
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -63,7 +84,7 @@ const HomePage = () => {
 
       const templatesWithPreviews = data.map((t: any) => ({
         ...t,
-        preview: `/templates/${t.name}/borders.png`,
+        preview: `/templates/${t.name}/example.png`,
       }));
 
       setTemplates(templatesWithPreviews);
@@ -85,47 +106,82 @@ const HomePage = () => {
     setCurrentSides(selectedTemplate.sides);
   };
 
+  const handleSubmitDesign = async () => {
+    const session = await getSession()
+    console.log({session})
+    console.log({user})
+    if (!session || !session.user?.id) {
+      toast.error("Debes iniciar sesión para guardar el diseño.")
+      return
+    }
+
+    try {
+      const res = await fetch('/api/design/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          colegioId: session.user.id,
+          templateName: currentTemplateName,
+          layerColors,
+          customText,
+          textColor,
+          textPosition,
+          fontFamily,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success('Diseño guardado con éxito');
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Error al guardar el diseño');
+      }
+    } catch (err) {
+      toast.error('Error de conexión al servidor');
+    }
+  };
+
   return (
     <PageWrapper>
       <AppWrapper>
-      <Navbar />
-      <MainContainer>
-        <Content>
-        <FlagEditor
-          templateName={currentTemplateName}
-          sides={currentSides}
-          layerColors={layerColors}
-          setLayerColors={setLayerColors}
-          customText={customText}
-          setCustomText={setCustomText}
-          fontFamily={fontFamily}
-          setFontFamily={setFontFamily}
-          textColor={textColor}
-          setTextColor={setTextColor}
-          textPosition={textPosition}
-          setTextPosition={setTextPosition}
-        />
+        <Navbar />
+        <MainContainer>
+          <Content>
+            <FlagEditor
+              templateName={currentTemplateName}
+              sides={currentSides}
+              layerColors={layerColors}
+              setLayerColors={setLayerColors}
+              customText={customText}
+              setCustomText={setCustomText}
+              fontFamily={fontFamily}
+              setFontFamily={setFontFamily}
+              textColor={textColor}
+              setTextColor={setTextColor}
+              textPosition={textPosition}
+              setTextPosition={setTextPosition}
+            />
 
+            <PreviewSection
+              templateName={currentTemplateName}
+              layerColors={layerColors}
+              customText={customText}
+              fontFamily={fontFamily}
+              textColor={textColor}
+              textPosition={textPosition}
+            />
 
-          <PreviewSection
-            templateName={currentTemplateName}
-            layerColors={layerColors}
-            customText={customText}
-            fontFamily={fontFamily}
-            textColor={textColor}
-            textPosition={textPosition}
-          />
+            <SelectButton onClick={handleSubmitDesign}>SELECCIONAR DISEÑO</SelectButton>
+          </Content>
 
-        </Content>
-
-        <SidebarRight>
-          <TemplatesList
-            templates={templates}
-            currentTemplate={currentTemplateName}
-            onTemplateChange={handleTemplateChange}
-          />
-        </SidebarRight>
-      </MainContainer>
+          <SidebarRight>
+            <TemplatesList
+              templates={templates}
+              currentTemplate={currentTemplateName}
+              onTemplateChange={handleTemplateChange}
+            />
+          </SidebarRight>
+        </MainContainer>
       </AppWrapper>
     </PageWrapper>
   );

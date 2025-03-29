@@ -6,6 +6,7 @@ import ColorPanel from './ColorPanel';
 import CanvasArea from './CanvasArea';
 import LayersControls from './LayersControls';
 import ModalTexto from './ModalTexto';
+import { useModal } from '../../context/ModalContext';
 
 const EditorWrapper = styled.div`
   display: flex;
@@ -38,20 +39,18 @@ type FlagEditorProps = {
     setTextPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
 };
   
-
 const pastelPalette = [
-    '#A5F3FC', // celeste claro
-    '#C4B5FD', // lila suave
-    '#BBF7D0', // verde menta
-    '#FBCFE8', // rosado suave
-    '#FDE68A', // amarillo pastel
-    '#FCD34D', // mostaza claro
-    '#E0E7FF', // lavanda
-    '#FCA5A5', // coral
-    '#D9F99D', // lima suave
-    '#FDE2E4'  // rosita empolvado
+    '#3B82F6', // azul eléctrico suave
+    '#8B5CF6', // violeta vibrante
+    '#F43F5E', // fucsia fuerte
+    '#FBBF24', // amarillo dorado intenso
+    '#10B981', // verde menta saturado
+    '#F87171', // rosa chicle
+    '#60A5FA', // celeste saturado
+    '#F472B6', // rosa intenso
+    '#34D399', // verde brillante
+    '#FB923C', // naranja sunset
   ];
-  
 
   const FlagEditor = ({
     templateName,
@@ -68,6 +67,7 @@ const pastelPalette = [
     setTextPosition
   }: FlagEditorProps) => {
     const { color, setColor } = useColor();
+    const { isModalOpen } = useModal();
 
   const [selectedLayer, setSelectedLayer] = useState<number | null>(null);
   const [recentColors, setRecentColors] = useState<string[]>([]);
@@ -76,24 +76,28 @@ const pastelPalette = [
   const [lastSelectedTarget, setLastSelectedTarget] = useState<'layer' | 'text' | null>(null);
 
   useEffect(() => {
-    setLayerColors(Array(sides));
-    setSelectedLayer(null);
+    setLayerColors(Array(sides).fill(''));
+  
+    setSelectedLayer(sides);
+  
+    setColor('#000000');
+  
     setCustomText('');
-    setTextPosition({ x: .5, y: .5 });
+    setTextPosition({ x: 0.5, y: 0.5 });
+  
     setLastSelectedTarget('layer');
-
+  
     const shuffled = pastelPalette.sort(() => 0.5 - Math.random());
-  setRecentColors(shuffled.slice(0, 5));
+    setRecentColors(shuffled.slice(0, 5));
   }, [templateName, sides]);
+  
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Acepta solo del 1 al 9
+      if (isModalOpen) return; // 🚫 evita aplicar color si hay un modal abierto
+  
       if (!/^[1-9]$/.test(e.key)) return;
-  
       const index = parseInt(e.key, 10) - 1;
-  
-      // Si existe ese layer
       if (index < sides) {
         const updated = [...layerColors];
         updated[index] = color;
@@ -106,27 +110,23 @@ const pastelPalette = [
   
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [color, layerColors, sides]);
+  }, [color, layerColors, sides, isModalOpen]);
   
 
   const applyColor = () => {
     if (lastSelectedTarget === 'text' && customText) {
-      console.log('Aplicando color al texto:', color);
       setTextColor(color);
       updateRecentColors(color);
       return;
     }
   
     if (lastSelectedTarget === 'layer' && selectedLayer !== null) {
-      console.log('Aplicando color al layer:', selectedLayer, color);
       const updatedColors = [...layerColors];
       updatedColors[selectedLayer] = color;
       setLayerColors(updatedColors);
       updateRecentColors(color);
       return;
     }
-  
-    console.log('No hay un target seleccionado.');
   };
 
   const removeColor = () => {

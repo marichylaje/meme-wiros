@@ -1,30 +1,49 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+// src/context/UserContext.tsx
+import { createContext, useContext, useEffect, useState } from 'react';
+import jwt from 'jsonwebtoken';
 
-type UserContextType = {
-  isLoggedIn: boolean;
-  login: () => void;
-  logout: () => void;
-};
+const UserContext = createContext({
+  user: null as null | { id: string; email: string },
+  isLoggedIn: false,
+  login: (token: string) => {},
+  logout: () => {},
+});
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+export const useUser = () => useContext(UserContext);
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<null | { id: string; email: string }>(null);
 
-  const login = () => setIsLoggedIn(true);
-  const logout = () => setIsLoggedIn(false);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded: any = jwt.decode(token);
+        if (decoded && decoded.id && decoded.email) {
+          setUser({ id: decoded.id, email: decoded.email });
+        }
+      } catch {
+        localStorage.removeItem('token');
+      }
+    }
+  }, []);
+
+  const login = (token: string) => {
+    localStorage.setItem('token', token);
+    const decoded: any = jwt.decode(token);
+    if (decoded && decoded.id && decoded.email) {
+      setUser({ id: decoded.id, email: decoded.email });
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
 
   return (
-    <UserContext.Provider value={{ isLoggedIn, login, logout }}>
+    <UserContext.Provider value={{ user, isLoggedIn: !!user, login, logout }}>
       {children}
     </UserContext.Provider>
   );
-};
-
-export const useUser = () => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUser debe ser usado dentro de un UserProvider');
-  }
-  return context;
 };

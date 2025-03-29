@@ -1,5 +1,8 @@
 import styled from 'styled-components';
 import { useUser } from '../context/UserContext';
+import { useState } from 'react';
+import LoginModal from './LoginModal';
+import RegisterModal from './RegisterModal';
 
 const Nav = styled.nav`
   display: flex;
@@ -43,21 +46,31 @@ const Button = styled.button`
 `;
 
 const Navbar = () => {
-  const { isLoggedIn, login, logout } = useUser();
+  const { isLoggedIn, logout } = useUser();
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   return (
-    <Nav>
-      <Brand>FlagDesigner</Brand>
+    <>
+      <Nav>
+        <Brand>FlagDesigner</Brand>
+        <Menu>
+          <a href="/about">Sobre Nosotros</a>
 
-      <Menu>
-        <a href="/about">Sobre Nosotros</a>
-        {isLoggedIn ? (
-          <Button onClick={logout}>Salir</Button>
-        ) : (
-          <Button onClick={login}>Ingresar</Button>
-        )}
-      </Menu>
-    </Nav>
+          {isLoggedIn ? (
+            <Button onClick={logout}>Salir</Button>
+          ) : (
+            <>
+              <Button onClick={() => setShowLogin(true)}>Ingresar</Button>
+              <Button onClick={() => setShowRegister(true)}>Registrarse</Button>
+            </>
+          )}
+        </Menu>
+      </Nav>
+
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+      {showRegister && <RegisterModal onClose={() => setShowRegister(false)} />}
+    </>
   );
 };
 

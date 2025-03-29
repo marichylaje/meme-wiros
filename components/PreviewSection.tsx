@@ -85,7 +85,7 @@ const PreviewSection = ({ templateName, layerColors, customText, fontFamily, tex
     console.log({customText})
   return (
     <div style={{position: 'relative'}}>
-      <h2 style={{ textAlign: 'center', color: 'black', position: 'relative', paddingTop: '15px', top: '15px', zIndex: 99999 }}>Vista previa</h2>
+      <h2 style={{ textAlign: 'center', color: 'black', position: 'relative', paddingTop: '15px', top: '15px', zIndex: 999 }}>Vista previa</h2>
       <PreviewFrameOverlay src="/vista-previa.png" alt="Vista previa marco" />
       <PreviewContainer>
         {[1, 2, 3].map((i) => (

@@ -45,7 +45,6 @@ const CanvasArea = ({
   setLastSelectedTarget
 }: any) => {
     const fullimgColor = layerColors[sides]; // index extra
-    console.log({fullimgColor})
   return (
     <AspectRatioBox>
         {Array.from({ length: sides }, (_, index) => {

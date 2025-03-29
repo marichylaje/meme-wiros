@@ -62,7 +62,7 @@ export default function Login() {
 
       if (res.ok) {
         alert('Inicio de sesión exitoso!');
-        login();
+        login(data.token); // 👈 pasamos el token aquí
         router.push('/'); // Redirige a la página principal después del login
       } else {
         alert(data.message || 'Error en el inicio de sesión');

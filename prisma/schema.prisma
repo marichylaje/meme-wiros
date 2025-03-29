@@ -13,6 +13,27 @@ model User {
   nombreCurso   String
   email         String   @unique
   password      String
+  cantidad      Int
+  anioEgreso    Int
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  design Design? @relation("UserDesign")
+}
+
+model Design {
+  id           String @id @default(cuid())
+  templateName String
+  layerColors  String
+  customText   String
+  textColor    String
+  textPosition String
+  fontFamily   String
+
+  // Relación 1:1 con User
+  colegioId String @unique
+  colegio   User   @relation("UserDesign", fields: [colegioId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
