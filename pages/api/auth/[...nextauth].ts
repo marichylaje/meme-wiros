@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { PrismaClient } from '@prisma/client' // <-- ✅ esto es lo que faltaba
 
 const prisma = new PrismaClient()
 
@@ -38,7 +38,7 @@ export const authOptions = {
     signIn: '/login',
   },
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
   },
   callbacks: {
     async jwt({ token, user }) {
