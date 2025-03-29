@@ -6,22 +6,28 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
 
   try {
     const { nombreColegio, nombreCurso, email, password, cantidad, anioEgreso } = req.body;
 
-    // Validaciones mínimas
+    console.log("📩 Datos recibidos:", req.body);
+
     if (
       !nombreColegio?.trim() ||
       !nombreCurso?.trim() ||
       !email?.includes('@') ||
       !password ||
-      isNaN(cantidad) ||
-      isNaN(anioEgreso)
+      isNaN(Number(cantidad)) ||
+      isNaN(Number(anioEgreso))
     ) {
       return res.status(400).json({ error: 'Datos inválidos o incompletos' });
     }
+
+    const parsedCantidad = parseInt(cantidad);
+    const parsedAnio = parseInt(anioEgreso);
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -36,10 +42,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         nombreCurso,
         email,
         password: hashed,
-        cantidad: parseInt(cantidad),
-        anioEgreso: parseInt(anioEgreso),
+        cantidad: parsedCantidad,
+        anioEgreso: parsedAnio,
       },
     });
+
+    console.log("✅ Usuario creado:", user);
 
     return res.status(201).json({
       message: 'Usuario creado exitosamente',

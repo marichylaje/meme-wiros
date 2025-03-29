@@ -66,6 +66,7 @@ const SelectButton = styled.button`
 `;
 
 const HomePage = () => {
+  console.log("version 0.2")
   const { data: session, status } = useSession();
   const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([]);
   const [currentTemplateName, setCurrentTemplateName] = useState('');
