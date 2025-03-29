@@ -53,25 +53,33 @@ const RegisterForm = ({ onClose }: { onClose: () => void }) => {
       body: JSON.stringify(formData),
     });
 
-    const result = await res.json();
+    let data;
 
-    if (!res.ok) {
-      toast.error(result.error || 'Error en el registro');
-      return;
+    try {
+      data = await res.json(); // Puede fallar si no hay body
+    } catch (err) {
+      console.warn('La respuesta no contenía JSON válido');
     }
-
+    
+    if (!res.ok) {
+      toast.error(data?.error || 'Error inesperado');
+      return; // ⛔ corta ejecución
+    }
+    
+    toast.success('¡Usuario registrado!');
+    
     // ✅ Auto-login después de registrar
     const signInRes = await signIn('credentials', {
       redirect: false,
       email: formData.email,
       password: formData.password,
     });
-
+    
     if (signInRes?.ok) {
       toast.success('¡Registrado y logueado!');
       onClose();
     } else {
-      toast.error('Registro exitoso, pero fallo al iniciar sesión.');
+      toast.error('Registro exitoso, pero falló al iniciar sesión.');
     }
   };
 

@@ -11,29 +11,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { nombreColegio, nombreCurso, email, password, cantidad, anioEgreso } = req.body;
 
-    if (!nombreColegio || !nombreCurso || !email || !password || !cantidad || !anioEgreso)
-      return res.status(400).json({ error: 'Faltan campos requeridos' });
+    // Validaciones mínimas
+    if (
+      !nombreColegio?.trim() ||
+      !nombreCurso?.trim() ||
+      !email?.includes('@') ||
+      !password ||
+      isNaN(cantidad) ||
+      isNaN(anioEgreso)
+    ) {
+      return res.status(400).json({ error: 'Datos inválidos o incompletos' });
+    }
 
-    const userExists = await prisma.user.findUnique({ where: { email } });
-    if (userExists)
-      return res.status(409).json({ error: 'Email ya registrado' });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ error: 'El email ya está registrado' });
+    }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
         nombreColegio,
         nombreCurso,
         email,
-        password: hashedPassword,
+        password: hashed,
         cantidad: parseInt(cantidad),
         anioEgreso: parseInt(anioEgreso),
       },
     });
 
-    return res.status(201).json({ message: 'Usuario creado exitosamente', user });
-  } catch (err) {
-    console.error('Error en registro:', err);
+    return res.status(201).json({
+      message: 'Usuario creado exitosamente',
+      user: {
+        id: user.id,
+        email: user.email,
+        colegio: user.nombreColegio,
+        curso: user.nombreCurso,
+      },
+    });
+  } catch (error) {
+    console.error('❌ Error al registrar usuario:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
