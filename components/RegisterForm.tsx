@@ -46,42 +46,35 @@ const RegisterForm = ({ onClose }: { onClose: () => void }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
+    // Paso 1: crear el usuario en tu DB
     const res = await fetch('/api/users/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     });
-
-    let data;
-
-    try {
-      data = await res.json(); // Puede fallar si no hay body
-    } catch (err) {
-      console.warn('La respuesta no contenía JSON válido');
-    }
-    
+  
+    const data = await res.json();
     if (!res.ok) {
-      toast.error(data?.error || 'Error inesperado');
-      return; // ⛔ corta ejecución
+      toast.error(data.error || 'Error en el registro');
+      return;
     }
-    
-    toast.success('¡Usuario registrado!');
-    
-    // ✅ Auto-login después de registrar
+  
+    // Paso 2: login automático con NextAuth
     const signInRes = await signIn('credentials', {
       redirect: false,
       email: formData.email,
       password: formData.password,
     });
-    
+  
     if (signInRes?.ok) {
-      toast.success('¡Registrado y logueado!');
+      toast.success('¡Registro y login exitoso!');
       onClose();
     } else {
-      toast.error('Registro exitoso, pero falló al iniciar sesión.');
+      toast.error('Registrado, pero falló el login.');
     }
   };
+  
 
   return (
     <Form onSubmit={handleSubmit}>

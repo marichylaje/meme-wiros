@@ -1,65 +1,33 @@
-// pages/api/auth/register.ts
-import { PrismaClient } from '@prisma/client';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import bcrypt from 'bcryptjs';
+// pages/api/users/register.ts
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' })
 
-  try {
-    const { nombreColegio, nombreCurso, email, password, cantidad, anioEgreso } = req.body;
+  const { nombreColegio, nombreCurso, email, password, cantidad, anioEgreso } = req.body
 
-    console.log("📩 Datos recibidos:", req.body);
+  if (!email || !password || !nombreColegio || !nombreCurso || !cantidad || !anioEgreso)
+    return res.status(400).json({ error: 'Campos obligatorios' })
 
-    if (
-      !nombreColegio?.trim() ||
-      !nombreCurso?.trim() ||
-      !email?.includes('@') ||
-      !password ||
-      isNaN(Number(cantidad)) ||
-      isNaN(Number(anioEgreso))
-    ) {
-      return res.status(400).json({ error: 'Datos inválidos o incompletos' });
-    }
+  const exists = await prisma.user.findUnique({ where: { email } })
+  if (exists) return res.status(409).json({ error: 'Email ya registrado' })
 
-    const parsedCantidad = parseInt(cantidad);
-    const parsedAnio = parseInt(anioEgreso);
+  const hashedPassword = await bcrypt.hash(password, 10)
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return res.status(409).json({ error: 'El email ya está registrado' });
-    }
+  const user = await prisma.user.create({
+    data: {
+      nombreColegio,
+      nombreCurso,
+      email,
+      password: hashedPassword,
+      cantidad: parseInt(cantidad),
+      anioEgreso: parseInt(anioEgreso),
+    },
+  })
 
-    const hashed = await bcrypt.hash(password, 10);
-
-    const user = await prisma.user.create({
-      data: {
-        nombreColegio,
-        nombreCurso,
-        email,
-        password: hashed,
-        cantidad: parsedCantidad,
-        anioEgreso: parsedAnio,
-      },
-    });
-
-    console.log("✅ Usuario creado:", user);
-
-    return res.status(201).json({
-      message: 'Usuario creado exitosamente',
-      user: {
-        id: user.id,
-        email: user.email,
-        colegio: user.nombreColegio,
-        curso: user.nombreCurso,
-      },
-    });
-  } catch (error) {
-    console.error('❌ Error al registrar usuario:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
-  }
+  return res.status(201).json({ message: 'Registrado correctamente', user: { id: user.id, email: user.email } })
 }
