@@ -66,7 +66,7 @@ const SelectButton = styled.button`
 `;
 
 const HomePage = () => {
-  console.log("version 0.2")
+  console.log("version 0.3")
   const { data: session, status } = useSession();
   const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([]);
   const [currentTemplateName, setCurrentTemplateName] = useState('');
@@ -138,6 +138,9 @@ const HomePage = () => {
     }
   };
   
+  useEffect(() => {
+    console.log({session})
+  }, [session])
 
   return (
     <PageWrapper>
