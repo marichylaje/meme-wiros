@@ -1,33 +1,41 @@
+// pages/api/auth/register.ts
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { signToken, setTokenCookie } from '../../../lib/auth'
 
 const prisma = new PrismaClient()
+const SECRET = process.env.JWT_SECRET!
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') return res.status(405).end()
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' }) // 👈 este responde 405
+  }
 
-  const { email, password, nombreColegio, nombreCurso, cantidad, anioEgreso } = req.body
+  const { nombreColegio, nombreCurso, email, password, cantidad, anioEgreso } = req.body
 
-  const userExist = await prisma.user.findUnique({ where: { email } })
-  if (userExist) return res.status(409).json({ error: 'Email ya registrado' })
+  try {
+    const userExists = await prisma.user.findUnique({ where: { email } })
+    if (userExists) return res.status(409).json({ error: 'Email ya registrado' })
 
-  const hashed = await bcrypt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 10)
 
-  const user = await prisma.user.create({
-    data: {
-      email,
-      password: hashed,
-      nombreColegio,
-      nombreCurso,
-      cantidad: parseInt(cantidad),
-      anioEgreso: parseInt(anioEgreso),
-    }
-  })
+    const user = await prisma.user.create({
+      data: {
+        nombreColegio,
+        nombreCurso,
+        email,
+        password: hashedPassword,
+        cantidad: parseInt(cantidad),
+        anioEgreso: parseInt(anioEgreso),
+      },
+    })
 
-  const token = signToken({ id: user.id, email: user.email })
-  setTokenCookie(res, token)
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: '7d' })
 
-  res.status(201).json({ message: 'Registrado con éxito', user: { id: user.id, email: user.email } })
+    res.status(201).json({ message: 'Registrado con éxito', token })
+  } catch (err) {
+    console.error('❌ Error en registro:', err)
+    res.status(500).json({ error: 'Error del servidor' })
+  }
 }
