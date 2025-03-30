@@ -58,6 +58,7 @@ const LoginForm = ({ onClose }: { onClose: () => void }) => {
       login(data.token)
       toast.success('Sesión iniciada')
       router.push('/')
+      onClose();
     } else {
       setError(data.error || 'Error al iniciar sesión')
       toast.error(data.error || 'Error')
