@@ -15,8 +15,8 @@ model User {
   nombreCurso    String
   cantidad       Int
   anioEgreso     Int
-  design         Design?  @relation(fields: [designId], references: [id])
-  designId       String?  @unique
+
+  design         Design?  // Relación 1:1 (no necesita fields ni references acá)
 }
 
 model Design {
@@ -28,5 +28,6 @@ model Design {
   textPosition  String
   fontFamily    String
 
-  user          User?    @relation
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
 }

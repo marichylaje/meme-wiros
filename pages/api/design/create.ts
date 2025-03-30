@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         textColor,
         textPosition: JSON.stringify(textPosition),
         fontFamily,
-        colegioId: userId,
+        userId, // ✅ ESTE es el campo correcto
       },
     })
 
