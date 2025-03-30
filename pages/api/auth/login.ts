@@ -21,5 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const token = signToken({ id: user.id, email: user.email })
   setTokenCookie(res, token)
 
-  res.status(200).json({ message: 'Login exitoso', user: { id: user.id, email: user.email } })
+  res.status(200).json({
+    message: 'Login exitoso',
+    token, // ✅ el JWT
+    user: { id: user.id, email: user.email }
+  })
 }
