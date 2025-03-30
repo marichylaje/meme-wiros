@@ -75,6 +75,7 @@ const HomePage = () => {
   const [fontFamily, setFontFamily] = useState('Arial')
   const [textColor, setTextColor] = useState('#FFFFFF')
   const [textPosition, setTextPosition] = useState({ x: 0.5, y: 0.5 })
+  console.log('🔐 JWT_SECRET:', process.env.JWT_SECRET)
 
   useEffect(() => {
     const fetchTemplates = async () => {

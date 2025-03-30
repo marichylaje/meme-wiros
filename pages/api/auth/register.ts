@@ -8,6 +8,7 @@ const prisma = new PrismaClient()
 const SECRET = process.env.JWT_SECRET!
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    console.log('[REGISTER] Request received', req.method, req.body);
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' }) // 👈 este responde 405
   }

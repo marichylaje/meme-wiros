@@ -6,6 +6,8 @@ import { signToken, setTokenCookie } from '../../../lib/auth'
 const prisma = new PrismaClient()
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('[LOGIN] Request received', req.method, req.body);
+
   if (req.method !== 'POST') return res.status(405).end()
 
   const { email, password } = req.body
