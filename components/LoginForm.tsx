@@ -35,7 +35,7 @@ const Error = styled.div`
   font-size: 0.9rem;
 `
 
-const LoginForm = () => {
+const LoginForm = ({ onClose }: { onClose: () => void }) => {
   const { login } = useAuth()
   const router = useRouter()
   const [email, setEmail] = useState('')

@@ -44,7 +44,7 @@ const LoginModal = ({ onClose }: { onClose: () => void }) => {
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>&times;</CloseButton>
         <h2 style={{ marginBottom: '1rem' }}>Iniciar sesión</h2>
-        <LoginForm onSuccess={onClose} />
+        <LoginForm onClose={onClose} />
       </ModalContent>
     </ModalOverlay>
   );

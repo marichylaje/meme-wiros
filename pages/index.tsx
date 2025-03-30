@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
-import TemplatesList from '../components/TemplatesList';
-import PreviewSection from '../components/PreviewSection';
-import FlagEditor from '../components/FlagEditor';
-import styled from 'styled-components';
-import toast from 'react-hot-toast';
-import { useAuth } from '../context/AuthContext';
+import { useEffect, useState } from 'react'
+import Navbar from '../components/Navbar'
+import TemplatesList from '../components/TemplatesList'
+import PreviewSection from '../components/PreviewSection'
+import FlagEditor from '../components/FlagEditor'
+import styled from 'styled-components'
+import toast from 'react-hot-toast'
+import { useAuth } from '../context/AuthContext'
 
 const PageWrapper = styled.div`
   display: flex;
@@ -13,7 +13,7 @@ const PageWrapper = styled.div`
   height: 100%;
   width: 100%;
   background-color: #1f2937;
-`;
+`
 
 const AppWrapper = styled.div`
   display: flex;
@@ -21,7 +21,7 @@ const AppWrapper = styled.div`
   height: 100vh;
   max-width: 1200px;
   margin: auto;
-`;
+`
 
 const MainContainer = styled.div`
   display: flex;
@@ -29,7 +29,7 @@ const MainContainer = styled.div`
   color: #f9fafb;
   overflow: hidden;
   margin-top: 50px;
-`;
+`
 
 const Content = styled.div`
   flex: 1;
@@ -37,7 +37,7 @@ const Content = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   overflow-y: auto;
-`;
+`
 
 const SidebarRight = styled.div`
   width: 300px;
@@ -46,7 +46,7 @@ const SidebarRight = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-`;
+`
 
 const SelectButton = styled.button`
   margin: 2rem auto 1rem;
@@ -63,55 +63,54 @@ const SelectButton = styled.button`
   &:hover {
     background-color: #059669;
   }
-`;
+`
 
 const HomePage = () => {
-  console.log("version 0.3")
-  const { user, isLoggedIn } = useAuth()
-  const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([]);
-  const [currentTemplateName, setCurrentTemplateName] = useState('');
-  const [currentSides, setCurrentSides] = useState(0);
-  const [layerColors, setLayerColors] = useState<string[]>([]);
-  const [customText, setCustomText] = useState('');
-  const [fontFamily, setFontFamily] = useState('Arial');
-  const [textColor, setTextColor] = useState('#FFFFFF');
-  const [textPosition, setTextPosition] = useState({ x: 0.5, y: 0.5 }); // relativo
+  const { user, isAuthenticated } = useAuth()
+  const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([])
+  const [currentTemplateName, setCurrentTemplateName] = useState('')
+  const [currentSides, setCurrentSides] = useState(0)
+  const [layerColors, setLayerColors] = useState<string[]>([])
+  const [customText, setCustomText] = useState('')
+  const [fontFamily, setFontFamily] = useState('Arial')
+  const [textColor, setTextColor] = useState('#FFFFFF')
+  const [textPosition, setTextPosition] = useState({ x: 0.5, y: 0.5 })
 
   useEffect(() => {
     const fetchTemplates = async () => {
-      const res = await fetch('/api/templates');
-      const data = await res.json();
+      const res = await fetch('/api/templates')
+      const data = await res.json()
 
       const templatesWithPreviews = data.map((t: any) => ({
         ...t,
         preview: `/templates/${t.name}/example.png`,
-      }));
+      }))
 
-      setTemplates(templatesWithPreviews);
+      setTemplates(templatesWithPreviews)
 
       if (templatesWithPreviews.length > 0) {
-        setCurrentTemplateName(templatesWithPreviews[0].name);
-        setCurrentSides(templatesWithPreviews[0].sides);
+        setCurrentTemplateName(templatesWithPreviews[0].name)
+        setCurrentSides(templatesWithPreviews[0].sides)
       }
-    };
+    }
 
-    fetchTemplates();
-  }, []);
+    fetchTemplates()
+  }, [])
 
   const handleTemplateChange = (templateName: string) => {
-    const selectedTemplate = templates.find((t) => t.name === templateName);
-    if (!selectedTemplate) return;
+    const selectedTemplate = templates.find((t) => t.name === templateName)
+    if (!selectedTemplate) return
 
-    setCurrentTemplateName(selectedTemplate.name);
-    setCurrentSides(selectedTemplate.sides);
-  };
+    setCurrentTemplateName(selectedTemplate.name)
+    setCurrentSides(selectedTemplate.sides)
+  }
 
   const handleSubmitDesign = async () => {
-    if (!isLoggedIn || !user?.id) {
-      toast.error("Debes iniciar sesión para guardar el diseño.");
-      return;
+    if (!isAuthenticated || !user?.id) {
+      toast.error('Debes iniciar sesión para guardar el diseño.')
+      return
     }
-  
+
     try {
       const res = await fetch('/api/design/create', {
         method: 'POST',
@@ -125,22 +124,18 @@ const HomePage = () => {
           textPosition,
           fontFamily,
         }),
-      });
-  
+      })
+
       if (res.ok) {
-        toast.success('Diseño guardado con éxito');
+        toast.success('Diseño guardado con éxito')
       } else {
-        const data = await res.json();
-        toast.error(data.error || 'Error al guardar el diseño');
+        const data = await res.json()
+        toast.error(data.error || 'Error al guardar el diseño')
       }
     } catch (err) {
-      toast.error('Error de conexión al servidor');
+      toast.error('Error de conexión al servidor')
     }
-  };
-  
-  useEffect(() => {
-    console.log({user})
-  }, [user])
+  }
 
   return (
     <PageWrapper>
@@ -185,7 +180,7 @@ const HomePage = () => {
         </MainContainer>
       </AppWrapper>
     </PageWrapper>
-  );
-};
+  )
+}
 
-export default HomePage;
+export default HomePage
