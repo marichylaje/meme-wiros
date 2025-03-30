@@ -48,7 +48,7 @@ const RegisterForm = ({ onClose }: { onClose: () => void }) => {
     e.preventDefault();
   
     // Paso 1: crear el usuario en tu DB
-    const res = await fetch('/api/users/register', {
+    const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
