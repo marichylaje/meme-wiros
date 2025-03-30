@@ -5,7 +5,7 @@ import PreviewSection from '../components/PreviewSection';
 import FlagEditor from '../components/FlagEditor';
 import styled from 'styled-components';
 import toast from 'react-hot-toast';
-import { getSession, useSession } from 'next-auth/react';
+import { useAuth } from '../context/AuthContext';
 
 const PageWrapper = styled.div`
   display: flex;
@@ -67,7 +67,7 @@ const SelectButton = styled.button`
 
 const HomePage = () => {
   console.log("version 0.3")
-  const { data: session, status } = useSession();
+  const { user, isLoggedIn } = useAuth()
   const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([]);
   const [currentTemplateName, setCurrentTemplateName] = useState('');
   const [currentSides, setCurrentSides] = useState(0);
@@ -107,7 +107,7 @@ const HomePage = () => {
   };
 
   const handleSubmitDesign = async () => {
-    if (!session || !session.user?.id) {
+    if (!isLoggedIn || !user?.id) {
       toast.error("Debes iniciar sesión para guardar el diseño.");
       return;
     }
@@ -117,7 +117,7 @@ const HomePage = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          colegioId: session.user.id,
+          colegioId: user.id,
           templateName: currentTemplateName,
           layerColors,
           customText,
@@ -139,8 +139,8 @@ const HomePage = () => {
   };
   
   useEffect(() => {
-    console.log({session})
-  }, [session])
+    console.log({user})
+  }, [user])
 
   return (
     <PageWrapper>

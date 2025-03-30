@@ -1,96 +1,85 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Layout from '../components/Layout';
-import { useRouter } from 'next/router';
-import { signIn } from 'next-auth/react';
+// pages/login.tsx
+import { useState } from 'react'
+import styled from 'styled-components'
+import { useRouter } from 'next/router'
+import { useAuth } from '../context/AuthContext'
+import toast from 'react-hot-toast'
 
-const FormWrapper = styled.div`
+const Wrapper = styled.div`
   max-width: 400px;
-  margin: 2rem auto;
+  margin: 3rem auto;
   padding: 2rem;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-`;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+`
 
 const Input = styled.input`
   width: 100%;
-  margin-bottom: 1rem;
   padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-`;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+`
 
 const Button = styled.button`
   width: 100%;
   background-color: #3b82f6;
   color: white;
   padding: 0.75rem;
-  border-radius: 4px;
   font-weight: bold;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
   &:hover {
     background-color: #2563eb;
   }
-`;
+`
 
-const ErrorMsg = styled.p`
-  color: #dc2626;
-  font-weight: bold;
-  text-align: center;
-`;
+export default function LoginPage() {
+  const router = useRouter()
+  const { login } = useAuth()
 
-export default function Login() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({ email: '', password: '' })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const res = await signIn('credentials', {
-      redirect: false,
-      email: formData.email,
-      password: formData.password,
-    });
+    try {
+      const res = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
 
-    if (res?.ok) {
-      router.push('/');
-    } else {
-      setError('Correo o contraseña incorrectos');
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.error || 'Error al iniciar sesión')
+        return
+      }
+
+      login(data.token)
+      toast.success('Sesión iniciada')
+      router.push('/')
+    } catch (err) {
+      toast.error('Error de red')
     }
-  };
+  }
 
   return (
-    <Layout>
-      <FormWrapper>
-        <h2>Iniciar Sesión</h2>
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="email"
-            name="email"
-            placeholder="Correo electrónico"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          {error && <ErrorMsg>{error}</ErrorMsg>}
-          <Button type="submit">Iniciar sesión</Button>
-        </form>
-      </FormWrapper>
-    </Layout>
-  );
+    <Wrapper>
+      <h2>Iniciar sesión</h2>
+      <form onSubmit={handleSubmit}>
+        <Input type="email" name="email" placeholder="Email" onChange={handleChange} required />
+        <Input type="password" name="password" placeholder="Contraseña" onChange={handleChange} required />
+        <Button type="submit">Ingresar</Button>
+      </form>
+    </Wrapper>
+  )
 }

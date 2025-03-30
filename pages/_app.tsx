@@ -1,20 +1,20 @@
-import { ColorProvider } from '../context/ColorContext';
-import type { AppProps } from 'next/app';
-import '../styles/global.css';
-import { Toaster } from 'react-hot-toast';
-import { ModalProvider } from '../context/ModalContext';
-import { SessionProvider } from 'next-auth/react';
+// _app.tsx — limpio
+import type { AppProps } from 'next/app'
+import { ColorProvider } from '../context/ColorContext'
+import { ModalProvider } from '../context/ModalContext'
+import '../styles/global.css'
+import { Toaster } from 'react-hot-toast'
+import { AuthProvider } from '../context/AuthContext'
 
-export default function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SessionProvider session={session}>
+    <AuthProvider>
       <ColorProvider>
-          <ModalProvider>
-            <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
-            <Component {...pageProps} />
-          </ModalProvider>
+        <ModalProvider>
+          <Toaster position="top-right" />
+          <Component {...pageProps} />
+        </ModalProvider>
       </ColorProvider>
-    </SessionProvider>
-
-  );
+    </AuthProvider>
+  )
 }
