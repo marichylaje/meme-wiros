@@ -35,18 +35,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } = req.body
 
   try {
-    const design = await prisma.design.create({
-      data: {
+    const design = await prisma.design.upsert({
+      where: { userId },
+      update: {
         templateName,
         layerColors: JSON.stringify(layerColors),
         customText,
         textColor,
         textPosition: JSON.stringify(textPosition),
         fontFamily,
-        userId, // ✅ ESTE es el campo correcto
+      },
+      create: {
+        templateName,
+        layerColors: JSON.stringify(layerColors),
+        customText,
+        textColor,
+        textPosition: JSON.stringify(textPosition),
+        fontFamily,
+        user: {
+          connect: { id: userId },
+        },
       },
     })
-
+    
+    
     return res.status(201).json({ message: 'Diseño guardado', design })
   } catch (err) {
     console.error('Error al crear diseño:', err)
