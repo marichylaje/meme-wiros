@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
-import { PrismaClient } from '@prisma/client' // <-- ✅ esto es lo que faltaba
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -15,16 +15,25 @@ export const authOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials) return null
+        if (!credentials) {
+          console.error("❌ No se recibieron credenciales")
+          return null
+        }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         })
 
-        if (!user) return null
+        if (!user) {
+          console.error("❌ Usuario no encontrado:", credentials.email)
+          return null
+        }
 
         const isValid = await bcrypt.compare(credentials.password, user.password)
-        if (!isValid) return null
+        if (!isValid) {
+          console.error("❌ Contraseña incorrecta")
+          return null
+        }
 
         return {
           id: user.id,
@@ -49,6 +58,9 @@ export const authOptions = {
       return token
     },
     async session({ session, token }) {
+      if (!token) {
+        console.error("❌ Token no presente en callback de sesión")
+      }
       if (token) {
         session.user.id = token.id
         session.user.email = token.email
