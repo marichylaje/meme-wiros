@@ -8,32 +8,25 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  nombreColegio String
-  nombreCurso   String
-  email         String   @unique
-  password      String
-  cantidad      Int
-  anioEgreso    Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  design Design? @relation("UserDesign")
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  nombreColegio  String
+  nombreCurso    String
+  cantidad       Int
+  anioEgreso     Int
+  design         Design?  @relation(fields: [designId], references: [id])
+  designId       String?  @unique
 }
 
 model Design {
-  id           String @id @default(cuid())
-  templateName String
-  layerColors  String
-  customText   String
-  textColor    String
-  textPosition String
-  fontFamily   String
+  id            String   @id @default(cuid())
+  templateName  String
+  layerColors   String
+  customText    String
+  textColor     String
+  textPosition  String
+  fontFamily    String
 
-  // Relación 1:1 con User
-  colegioId String @unique
-  colegio   User   @relation("UserDesign", fields: [colegioId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user          User?    @relation
 }
