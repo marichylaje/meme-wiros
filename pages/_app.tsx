@@ -5,16 +5,19 @@ import { ModalProvider } from '../context/ModalContext'
 import '../styles/global.css'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from '../context/AuthContext'
+import { DesignProvider } from '../context/DesignContext'
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <AuthProvider>
-      <ColorProvider>
-        <ModalProvider>
-          <Toaster position="top-right" />
-          <Component {...pageProps} />
-        </ModalProvider>
-      </ColorProvider>
+      <DesignProvider> {/* ⬅️ nuevo */}
+        <ColorProvider>
+          <ModalProvider>
+            <Toaster position="top-right" />
+            <Component {...pageProps} />
+          </ModalProvider>
+        </ColorProvider>
+      </DesignProvider>
     </AuthProvider>
   )
 }

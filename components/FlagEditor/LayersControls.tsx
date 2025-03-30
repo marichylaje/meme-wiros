@@ -1,5 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useAuth } from '../../context/AuthContext'
+import { useRouter } from 'next/router'
+
+const ViewSavedButton = styled.button`
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+`
 
 const ButtonGroup = styled.div`
   display: flex;
@@ -33,7 +50,34 @@ const LayersControls = ({
     setSelectedLayer,
     applyColor,
     removeColor,
+    handleLoadSavedDesign,
   }: any) => {
+    const { isAuthenticated } = useAuth()
+const [savedDesign, setSavedDesign] = useState<any>(null)
+
+useEffect(() => {
+  const fetchSavedDesign = async () => {
+    const token = localStorage.getItem('token')
+    if (!token || !isAuthenticated) return
+
+    try {
+      const res = await fetch('/api/design/get', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setSavedDesign(data)
+      }
+    } catch (err) {
+      console.error('Error al traer diseño guardado', err)
+    }
+  }
+
+  fetchSavedDesign()
+}, [isAuthenticated])
+
     return (
       <ButtonGroup>
         {Array.from({ length: sides }, (_, index) => (
@@ -59,6 +103,14 @@ const LayersControls = ({
         >
           Eliminar Color
         </ApplyButton>
+        {savedDesign && (
+          <ViewSavedButton
+            onClick={handleLoadSavedDesign}
+          >
+            Ver seleccionada
+          </ViewSavedButton>
+        )}
+
       </ButtonGroup>
     );
   };

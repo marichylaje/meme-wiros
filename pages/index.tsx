@@ -6,13 +6,65 @@ import FlagEditor from '../components/FlagEditor'
 import styled from 'styled-components'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
+import { useDesign } from '../context/DesignContext'
 
-const PageWrapper = styled.div`...`
-const AppWrapper = styled.div`...`
-const MainContainer = styled.div`...`
-const Content = styled.div`...`
-const SidebarRight = styled.div`...`
-const SelectButton = styled.button`...`
+const PageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #1f2937;
+`
+
+const AppWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 1200px;
+  margin: auto;
+`
+
+const MainContainer = styled.div`
+  display: flex;
+  flex: 1;
+  color: #f9fafb;
+  overflow: hidden;
+  margin-top: 50px;
+`
+
+const Content = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: auto;
+`
+
+const SidebarRight = styled.div`
+  width: 300px;
+  padding: 1rem;
+  background-color: #111827;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+`
+
+const SelectButton = styled.button`
+  margin: 2rem auto 1rem;
+  padding: 1rem 2rem;
+  background-color: #10b981;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+
+  &:hover {
+    background-color: #059669;
+  }
+`
 
 const STORAGE_KEY = 'templateColors'
 
@@ -21,10 +73,10 @@ const HomePage = () => {
   const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([])
   const [currentTemplateName, setCurrentTemplateName] = useState('')
   const [currentSides, setCurrentSides] = useState(0)
-  const [hasDesign, setHasDesign] = useState(false)
 
   const [templateColors, setTemplateColors] = useState<Record<string, string[]>>({})
   const [layerColors, setLayerColors] = useState<string[]>([])
+  const { setSavedDesign } = useDesign()
 
   const [customText, setCustomText] = useState('')
   const [fontFamily, setFontFamily] = useState('Arial')
@@ -150,33 +202,50 @@ const HomePage = () => {
     }
   }
 
-  useEffect(() => {
-    const checkUserDesign = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) return
+  const handleLoadSavedDesign = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) return toast.error('Token no encontrado')
   
-      try {
-        const res = await fetch('/api/design/get', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        if (res.ok) {
-          const design = await res.json()
-          if (design?.id) setHasDesign(true)
-        }
-      } catch (err) {
-        console.error('Error al verificar diseño:', err)
+    try {
+      const res = await fetch('/api/design/get', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+  
+      if (!res.ok) throw new Error('No se encontró diseño')
+  
+      const data = await res.json()
+  
+      setCurrentTemplateName(data.templateName)
+      const template = templates.find(t => t.name === data.templateName)
+      if (template) {
+        setCurrentSides(template.sides)
       }
-    }
   
-    if (isAuthenticated) {
-      checkUserDesign()
+      setLayerColors(JSON.parse(data.layerColors))
+      setCustomText(data.customText)
+      setFontFamily(data.fontFamily)
+      setTextColor(data.textColor)
+      setTextPosition(JSON.parse(data.textPosition))
+  
+      setSavedDesign({
+        templateName: data.templateName,
+        layerColors: JSON.parse(data.layerColors),
+        customText: data.customText,
+        fontFamily: data.fontFamily,
+        textColor: data.textColor,
+        textPosition: JSON.parse(data.textPosition)
+      })
+  
+      toast.success('Diseño cargado con éxito')
+    } catch (err) {
+      toast.error('No se pudo cargar el diseño')
     }
-  }, [isAuthenticated])
+  }
 
   return (
     <PageWrapper>
       <AppWrapper>
-        <Navbar withFlagBtn={hasDesign} />
+        <Navbar />
         <MainContainer>
           <Content>
             <FlagEditor
@@ -192,6 +261,7 @@ const HomePage = () => {
               setTextColor={setTextColor}
               textPosition={textPosition}
               setTextPosition={setTextPosition}
+              handleLoadSavedDesign={handleLoadSavedDesign}
             />
 
             <PreviewSection

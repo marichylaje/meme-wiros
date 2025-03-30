@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import { useAuth } from '../context/AuthContext';
@@ -45,14 +46,13 @@ const Button = styled.button`
   }
 `;
 
-type NavbarProps = {
-  withFlagBtn?: boolean
-}
-
-const Navbar = ({ withFlagBtn }: NavbarProps) => {
-  const { isAuthenticated, logout } = useAuth()
+const Navbar = () => {
+  const { isAuthenticated, logout } = useAuth();
+  const router = useRouter();
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+
+  const isProfilePage = router.pathname === '/profile';
 
   return (
     <>
@@ -62,13 +62,14 @@ const Navbar = ({ withFlagBtn }: NavbarProps) => {
           <a href="/about">Sobre Nosotros</a>
 
           {isAuthenticated ? (
-            <><Button onClick={logout}>Salir</Button>
-            {withFlagBtn && (
-  <Button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-    Mi bandera
-  </Button>
-)}
-
+            <>
+              {!isProfilePage && (
+                <Button onClick={() => router.push('/profile')}>Mi Perfil</Button>
+              )}
+              {isProfilePage && (
+                <Button onClick={() => router.push('/')}>Diseñar bandera</Button>
+              )}
+              <Button onClick={logout}>Salir</Button>
             </>
           ) : (
             <>
