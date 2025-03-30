@@ -81,7 +81,6 @@ type PreviewSectionProps = {
   
 
 const PreviewSection = ({ templateName, layerColors, customText, fontFamily, textColor, textPosition }: PreviewSectionProps) => {
-  const sides = layerColors.length - 1;
     console.log({customText})
   return (
     <div style={{position: 'relative'}}>
@@ -90,7 +89,7 @@ const PreviewSection = ({ templateName, layerColors, customText, fontFamily, tex
       <PreviewContainer>
         {[1, 2, 3].map((i) => (
             <PreviewBox key={i}>
-                {Array.from({ length: sides }, (_, index) => (
+                {Array.from({ length: layerColors.length }, (_, index) => (
                     <PreviewLayer
                         key={index}
                         zIndex={index + 1}
@@ -98,13 +97,6 @@ const PreviewSection = ({ templateName, layerColors, customText, fontFamily, tex
                         $maskUrl={`/templates/${templateName}/img${index + 1}.png`}
                     />
                 ))}
-                
-                {layerColors[sides] && (
-                    <PreviewFullLayer
-                        color={layerColors[sides]}
-                        $maskUrl={`/templates/${templateName}/fullimg.png`}
-                    />
-                )}
                 {customText && (
                     <div
                         style={{

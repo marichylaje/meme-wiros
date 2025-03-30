@@ -33,7 +33,6 @@ const LayersControls = ({
     setSelectedLayer,
     applyColor,
     removeColor,
-    applyMetalBorders
   }: any) => {
     return (
       <ButtonGroup>
@@ -46,15 +45,6 @@ const LayersControls = ({
             Lado {index + 1}
           </LayerButton>
         ))}
-  
-        {/* Botón extra para Bordes */}
-        <LayerButton
-          selected={selectedLayer === sides}
-          onClick={() => setSelectedLayer(sides)}
-        >
-          Bordes
-        </LayerButton>
-  
         <ApplyButton
           onClick={applyColor}
           disabled={selectedLayer === null}
@@ -69,18 +59,6 @@ const LayersControls = ({
         >
           Eliminar Color
         </ApplyButton>
-        <ApplyButton
-            onClick={() => {
-                if (selectedLayer === sides) {
-                applyMetalBorders(); // función nueva
-                }
-            }}
-            disabled={selectedLayer !== sides}
-            style={{ backgroundColor: '#6B7280' }} // gris oscuro
-            >
-            Bordes Metalizados
-        </ApplyButton>
-
       </ButtonGroup>
     );
   };

@@ -137,22 +137,12 @@ const pastelPalette = [
     setLayerColors(updatedColors);
   };
   
-  
-
   const updateRecentColors = (newColor: string) => {
     setRecentColors((prevColors) => {
       const withoutNewColor = prevColors.filter((c) => c !== newColor);
       return [newColor, ...withoutNewColor].slice(0, 5);
     });
   };
-
-  const applyMetalBorders = () => {
-    const updatedColors = [...layerColors];
-    updatedColors[sides] = '#9CA3AF'; // gris metálico
-    setLayerColors(updatedColors);
-    updateRecentColors('#9CA3AF');
-    setLastSelectedTarget('layer');
-  }; 
 
   return (
     <EditorWrapper>
@@ -195,7 +185,6 @@ const pastelPalette = [
             }}
             applyColor={applyColor}
             removeColor={removeColor}
-            applyMetalBorders={applyMetalBorders}
         />
 
       </Container>
