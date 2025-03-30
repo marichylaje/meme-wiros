@@ -45,7 +45,11 @@ const Button = styled.button`
   }
 `;
 
-const Navbar = () => {
+type NavbarProps = {
+  withFlagBtn?: boolean
+}
+
+const Navbar = ({ withFlagBtn }: NavbarProps) => {
   const { isAuthenticated, logout } = useAuth()
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -58,7 +62,14 @@ const Navbar = () => {
           <a href="/about">Sobre Nosotros</a>
 
           {isAuthenticated ? (
-            <Button onClick={logout}>Salir</Button>
+            <><Button onClick={logout}>Salir</Button>
+            {withFlagBtn && (
+  <Button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+    Mi bandera
+  </Button>
+)}
+
+            </>
           ) : (
             <>
               <Button onClick={() => setShowLogin(true)}>Ingresar</Button>

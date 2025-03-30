@@ -21,6 +21,7 @@ const HomePage = () => {
   const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([])
   const [currentTemplateName, setCurrentTemplateName] = useState('')
   const [currentSides, setCurrentSides] = useState(0)
+  const [hasDesign, setHasDesign] = useState(false)
 
   const [templateColors, setTemplateColors] = useState<Record<string, string[]>>({})
   const [layerColors, setLayerColors] = useState<string[]>([])
@@ -149,10 +150,33 @@ const HomePage = () => {
     }
   }
 
+  useEffect(() => {
+    const checkUserDesign = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+  
+      try {
+        const res = await fetch('/api/design/get', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) {
+          const design = await res.json()
+          if (design?.id) setHasDesign(true)
+        }
+      } catch (err) {
+        console.error('Error al verificar diseño:', err)
+      }
+    }
+  
+    if (isAuthenticated) {
+      checkUserDesign()
+    }
+  }, [isAuthenticated])
+
   return (
     <PageWrapper>
       <AppWrapper>
-        <Navbar />
+        <Navbar withFlagBtn={hasDesign} />
         <MainContainer>
           <Content>
             <FlagEditor
