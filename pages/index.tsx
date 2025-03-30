@@ -111,13 +111,21 @@ const HomePage = () => {
       toast.error('Debes iniciar sesión para guardar el diseño.')
       return
     }
-
+  
+    const token = localStorage.getItem('token')
+    if (!token) {
+      toast.error('Token no encontrado.')
+      return
+    }
+  
     try {
       const res = await fetch('/api/design/create', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // ⬅️ JWT enviado aquí
+        },
         body: JSON.stringify({
-          colegioId: user.id,
           templateName: currentTemplateName,
           layerColors,
           customText,
@@ -126,7 +134,7 @@ const HomePage = () => {
           fontFamily,
         }),
       })
-
+  
       if (res.ok) {
         toast.success('Diseño guardado con éxito')
       } else {
@@ -137,6 +145,7 @@ const HomePage = () => {
       toast.error('Error de conexión al servidor')
     }
   }
+  
 
   return (
     <PageWrapper>
