@@ -5,7 +5,7 @@ import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import { useAuth } from '../context/AuthContext';
 
-const Nav = styled.nav`
+const NavContainer = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,12 +13,12 @@ const Nav = styled.nav`
   padding: 1rem 2rem;
   color: #f9fafb;
   z-index: 1000;
-  width: 95vw;
-  max-width: 1200px;
+  width: 100%;
   position: fixed;
   left: 0;
   top: 0;
 `;
+
 
 const Brand = styled.button`
   font-size: 1.5rem;
@@ -27,6 +27,15 @@ const Brand = styled.button`
   background-color: transparent;
   border: none;
   cursor: pointer;
+`;
+
+const Nav = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1130px;
+  margin: auto;
 `;
 
 
@@ -63,29 +72,31 @@ const Navbar = () => {
 
   return (
     <>
-      <Nav>
-        <Brand onClick={() => router.push('/')}>FlagDesigner</Brand>
-        <Menu>
-          <a href="/about">Sobre Nosotros</a>
+      <NavContainer>
+        <Nav>
+          <Brand onClick={() => router.push('/')}>FlagDesigner</Brand>
+          <Menu>
+            <a href="/about">Sobre Nosotros</a>
 
-          {isAuthenticated ? (
-            <>
-              {!isProfilePage && (
-                <Button onClick={() => router.push('/profile')}>Mi Perfil</Button>
-              )}
-              {isProfilePage && (
-                <Button onClick={() => router.push('/')}>Diseñar bandera</Button>
-              )}
-              <Button onClick={logout}>Salir</Button>
-            </>
-          ) : (
-            <>
-              <Button onClick={() => setShowLogin(true)}>Ingresar</Button>
-              <Button onClick={() => setShowRegister(true)}>Registrarse</Button>
-            </>
-          )}
-        </Menu>
-      </Nav>
+            {isAuthenticated ? (
+              <>
+                {!isProfilePage && (
+                  <Button onClick={() => router.push('/profile')}>Mi Perfil</Button>
+                )}
+                {isProfilePage && (
+                  <Button onClick={() => router.push('/')}>Diseñar bandera</Button>
+                )}
+                <Button onClick={logout}>Salir</Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={() => setShowLogin(true)}>Ingresar</Button>
+                <Button onClick={() => setShowRegister(true)}>Registrarse</Button>
+              </>
+            )}
+          </Menu>
+        </Nav>
+      </NavContainer>
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
       {showRegister && <RegisterModal onClose={() => setShowRegister(false)} />}

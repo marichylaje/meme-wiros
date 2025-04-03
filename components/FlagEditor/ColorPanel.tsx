@@ -97,7 +97,7 @@ const ColorPanel = ({
   return (
     <Panel>
       <IconButton onClick={onAddText} title="Agregar nuevo texto">
-        <MdTextFields size={24} />
+        {(MdTextFields as any)({ size: 24 })}
       </IconButton>
 
       <select
