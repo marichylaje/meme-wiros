@@ -14,16 +14,21 @@ const Nav = styled.nav`
   color: #f9fafb;
   z-index: 1000;
   width: 95vw;
+  max-width: 1200px;
   position: fixed;
   left: 0;
   top: 0;
 `;
 
-const Brand = styled.div`
+const Brand = styled.button`
   font-size: 1.5rem;
   font-weight: bold;
   color: #3b82f6;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
 `;
+
 
 const Menu = styled.div`
   display: flex;
@@ -54,10 +59,12 @@ const Navbar = () => {
 
   const isProfilePage = router.pathname === '/profile';
 
+  console.log("NAV BAR")
+
   return (
     <>
       <Nav>
-        <Brand>FlagDesigner</Brand>
+        <Brand onClick={() => router.push('/')}>FlagDesigner</Brand>
         <Menu>
           <a href="/about">Sobre Nosotros</a>
 

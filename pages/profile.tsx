@@ -5,11 +5,12 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import PreviewSection from '../components/PreviewSection';
 import { useRouter } from 'next/router';
+import Navbar from '../components/Navbar';
 
 const Container = styled.div`
   max-width: 800px;
   margin: 6rem auto 2rem;
-  padding: 2rem;
+  padding: 6rem 2rem 2rem; // 👈 esto asegura espacio para el navbar
   background: #f9fafb;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -147,100 +148,103 @@ const ProfilePage = () => {
   if (!formData) return null;
 
   return (
-    <Container>
-      <Title>Mi Perfil</Title>
+    <>
+      <Container>
+        <Navbar />
+        <Title>Mi Perfil</Title>
 
-      {design && (
-        <PreviewSection
-          templateName={design.templateName}
-          layerColors={JSON.parse(design.layerColors)}
-          customText={design.customText}
-          fontFamily={design.fontFamily}
-          textColor={design.textColor}
-          textPosition={JSON.parse(design.textPosition)}
-        />
-      )}
-
-      <form>
-        <FieldGroup>
-          <Label>Email</Label>
-          <Input value={formData.email} disabled />
-        </FieldGroup>
-
-        <FieldGroup>
-          <Label>Colegio</Label>
-          <Input
-            name="nombreColegio"
-            value={formData.nombreColegio}
-            onChange={handleChange}
-            disabled={!editing}
+        {design && (
+          <PreviewSection
+            templateName={design.templateName}
+            layerColors={JSON.parse(design.layerColors)}
+            customText={design.customText}
+            fontFamily={design.fontFamily}
+            textColor={design.textColor}
+            textPosition={JSON.parse(design.textPosition)}
           />
-        </FieldGroup>
+        )}
 
-        <FieldGroup>
-          <Label>Curso</Label>
-          <Input
-            name="nombreCurso"
-            value={formData.nombreCurso}
-            onChange={handleChange}
-            disabled={!editing}
-          />
-        </FieldGroup>
+        <form>
+          <FieldGroup>
+            <Label>Email</Label>
+            <Input value={formData.email} disabled />
+          </FieldGroup>
 
-        <FieldGroup>
-          <Label>Cantidad de alumnos</Label>
-          <Input
-            type="number"
-            name="cantidad"
-            value={formData.cantidad}
-            onChange={handleChange}
-            disabled={!editing}
-          />
-        </FieldGroup>
+          <FieldGroup>
+            <Label>Colegio</Label>
+            <Input
+              name="nombreColegio"
+              value={formData.nombreColegio}
+              onChange={handleChange}
+              disabled={!editing}
+            />
+          </FieldGroup>
 
-        <FieldGroup>
-          <Label>Año de egreso</Label>
-          <Input
-            type="number"
-            name="anioEgreso"
-            value={formData.anioEgreso}
-            onChange={handleChange}
-            disabled={!editing}
-          />
-        </FieldGroup>
+          <FieldGroup>
+            <Label>Curso</Label>
+            <Input
+              name="nombreCurso"
+              value={formData.nombreCurso}
+              onChange={handleChange}
+              disabled={!editing}
+            />
+          </FieldGroup>
 
-        <ButtonRow>
-            {editing ? (
-                <>
-                <Button
-                    type="button"
-                    data-variant="cancel"
-                    onClick={() => {
-                    setFormData(originalData);
-                    setEditing(false);
-                    }}
-                >
-                    Cancelar
-                </Button>
-                <Button
-                    type="button"
-                    onClick={handleUpdate}
-                >
-                    Guardar cambios
-                </Button>
-                </>
-            ) : (
-                <>
-                    <Button onClick={() => setEditing(true)}>Modificar</Button>
-                    <Button data-variant="delete" onClick={handleDeleteAccount} style={{ backgroundColor: '#ef4444' }}>
-                    Eliminar cuenta
-                    </Button>
-                </>
-            )}
-            </ButtonRow>
+          <FieldGroup>
+            <Label>Cantidad de alumnos</Label>
+            <Input
+              type="number"
+              name="cantidad"
+              value={formData.cantidad}
+              onChange={handleChange}
+              disabled={!editing}
+            />
+          </FieldGroup>
 
-      </form>
-    </Container>
+          <FieldGroup>
+            <Label>Año de egreso</Label>
+            <Input
+              type="number"
+              name="anioEgreso"
+              value={formData.anioEgreso}
+              onChange={handleChange}
+              disabled={!editing}
+            />
+          </FieldGroup>
+
+          <ButtonRow>
+              {editing ? (
+                  <>
+                  <Button
+                      type="button"
+                      data-variant="cancel"
+                      onClick={() => {
+                      setFormData(originalData);
+                      setEditing(false);
+                      }}
+                  >
+                      Cancelar
+                  </Button>
+                  <Button
+                      type="button"
+                      onClick={handleUpdate}
+                  >
+                      Guardar cambios
+                  </Button>
+                  </>
+              ) : (
+                  <>
+                      <Button onClick={() => setEditing(true)}>Modificar</Button>
+                      <Button data-variant="delete" onClick={handleDeleteAccount} style={{ backgroundColor: '#ef4444' }}>
+                      Eliminar cuenta
+                      </Button>
+                  </>
+              )}
+              </ButtonRow>
+
+        </form>
+      </Container>
+    </>
   );
 };
 

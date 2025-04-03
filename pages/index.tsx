@@ -248,21 +248,13 @@ const HomePage = () => {
         <Navbar />
         <MainContainer>
           <Content>
-            <FlagEditor
-              templateName={currentTemplateName}
-              sides={currentSides}
-              layerColors={layerColors}
-              setLayerColors={setLayerColors}
-              customText={customText}
-              setCustomText={setCustomText}
-              fontFamily={fontFamily}
-              setFontFamily={setFontFamily}
-              textColor={textColor}
-              setTextColor={setTextColor}
-              textPosition={textPosition}
-              setTextPosition={setTextPosition}
-              handleLoadSavedDesign={handleLoadSavedDesign}
-            />
+          <FlagEditor
+            templateName={currentTemplateName}
+            sides={currentSides}
+            layerColors={layerColors}
+            setLayerColors={setLayerColors}
+            handleLoadSavedDesign={handleLoadSavedDesign}
+          />
 
             <PreviewSection
               templateName={currentTemplateName}

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { MdTextFields, MdFontDownload } from 'react-icons/md';
+import { MdTextFields } from 'react-icons/md';
 
 const Panel = styled.div`
   display: flex;
@@ -56,16 +56,31 @@ const RecentColorButton = styled.button<{ color: string }>`
   }
 `;
 
+const TypoButton = styled.button`
+  padding: 0.5rem 1rem;
+  background-color: #fcd34d;
+  color: #111827;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #fbbf24;
+  }
+`;
+
 type ColorPanelProps = {
   color: string;
   recentColors: string[];
   onColorChange: (color: string) => void;
   onRecentColorClick: (color: string) => void;
 
-  openTextModal: () => void;
+  onAddText: () => void;
   fontOptions: string[];
   selectedFont: string;
   onFontChange: (font: string) => void;
+  onToggleFilled: any;
 };
 
 const ColorPanel = ({
@@ -73,19 +88,18 @@ const ColorPanel = ({
   recentColors,
   onColorChange,
   onRecentColorClick,
-  openTextModal,
+  onAddText,
   fontOptions,
   selectedFont,
   onFontChange,
+  onToggleFilled,
 }: ColorPanelProps) => {
   return (
     <Panel>
-      <IconButton onClick={openTextModal} title="Agregar / Editar texto">
-        {/** @ts-ignore */}
+      <IconButton onClick={onAddText} title="Agregar nuevo texto">
         <MdTextFields size={24} />
       </IconButton>
 
-      {/* Dropdown de Tipografías */}
       <select
         value={selectedFont}
         onChange={(e) => onFontChange(e.target.value)}
@@ -103,14 +117,16 @@ const ColorPanel = ({
         ))}
       </select>
 
-      {/* Color Picker */}
+      <TypoButton onClick={onToggleFilled}>
+        Alternar estilo
+      </TypoButton>
+
       <ColorInput
         type="color"
         value={color}
         onChange={(e) => onColorChange(e.target.value)}
       />
 
-      {/* Colores recientes */}
       <RecentColors>
         {recentColors.map((recent, idx) => (
           <RecentColorButton

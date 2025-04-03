@@ -83,7 +83,7 @@ type PreviewSectionProps = {
 const PreviewSection = ({ templateName, layerColors, customText, fontFamily, textColor, textPosition }: PreviewSectionProps) => {
     console.log({customText})
   return (
-    <div style={{position: 'relative'}}>
+    <div style={{position: 'relative', marginBottom: '100px'}}>
       <h2 style={{ textAlign: 'center', color: 'black', position: 'relative', paddingTop: '15px', top: '15px', zIndex: 999 }}>Vista previa</h2>
       <PreviewFrameOverlay src="/vista-previa.png" alt="Vista previa marco" />
       <PreviewContainer>
