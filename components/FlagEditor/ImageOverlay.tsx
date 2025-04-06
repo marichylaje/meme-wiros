@@ -1,8 +1,7 @@
-// ✅ ImageOverlay.tsx
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
-const OverlayImage = styled.img<{
+const ImageWrapper = styled.div<{
   x: number;
   y: number;
   size: number;
@@ -20,10 +19,17 @@ const OverlayImage = styled.img<{
   user-select: none;
 `;
 
+const OverlayImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+`;
+
 const Resizer = styled.div`
   width: 12px;
   height: 12px;
-  background: #000;
+  background: black;
   position: absolute;
   bottom: -6px;
   right: -6px;
@@ -50,9 +56,9 @@ const ImageOverlay = ({
   selected,
   setSelected,
 }: ImageOverlayProps) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
-  const imageRef = useRef<HTMLImageElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -61,7 +67,7 @@ const ImageOverlay = ({
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    const parent = imageRef.current?.parentElement;
+    const parent = wrapperRef.current?.parentElement;
     if (!parent) return;
     const bounds = parent.getBoundingClientRect();
 
@@ -86,22 +92,20 @@ const ImageOverlay = ({
   };
 
   return (
-    <>
-      <OverlayImage
-        ref={imageRef}
-        src={src}
-        x={position.x}
-        y={position.y}
-        size={size}
-        selected={selected}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      />
-
+    <ImageWrapper
+      ref={wrapperRef}
+      x={position.x}
+      y={position.y}
+      size={size}
+      selected={selected}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
+      <OverlayImage src={src} />
       {selected && <Resizer onMouseDown={() => setIsResizing(true)} />}
-    </>
+    </ImageWrapper>
   );
 };
 
