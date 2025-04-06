@@ -115,6 +115,11 @@ const HomePage = () => {
   const [texts, setTexts] = useState<TextElement[]>([])
   const [images, setImages] = useState<ImageElement[]>([])
 
+  useEffect(() => {
+    console.log({texts})
+    console.log({images})
+  }, [texts, images])
+
   const generateRandomColor = () => {
     const letters = '0123456789ABCDEF'
     let color = '#'
@@ -224,7 +229,9 @@ const HomePage = () => {
           textColor,
           textPosition,
           fontFamily,
-        }),
+          texts,
+          images
+        })
       })
 
       if (res.ok) {
@@ -260,7 +267,9 @@ const HomePage = () => {
       setFontFamily(data.fontFamily)
       setTextColor(data.textColor)
       setTextPosition(JSON.parse(data.textPosition))
-
+      setTexts(data.texts || []);
+      setImages(data.images || []);
+      
       setSavedDesign({
         templateName: data.templateName,
         layerColors: JSON.parse(data.layerColors),

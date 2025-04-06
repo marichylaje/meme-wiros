@@ -8,27 +8,28 @@ import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 
 const Container = styled.div`
-  max-width: 800px;
+  max-width: 900px;
   margin: 6rem auto 2rem;
   padding: 6rem 2rem 2rem; // 👈 esto asegura espacio para el navbar
-  background: #f9fafb;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
 const Title = styled.h2`
   font-size: 1.5rem;
   margin-bottom: 1rem;
+  color: white;
 `;
 
 const FieldGroup = styled.div`
   margin-bottom: 1rem;
+  color: white;
 `;
 
 const Label = styled.label`
   display: block;
   font-weight: 600;
   margin-bottom: 0.25rem;
+  color: white;
 `;
 
 const Input = styled.input`
@@ -36,6 +37,7 @@ const Input = styled.input`
   width: 100%;
   border-radius: 8px;
   border: 1px solid #ccc;
+  color: white;
 `;
 
 const ButtonRow = styled.div`
@@ -157,10 +159,8 @@ const ProfilePage = () => {
           <PreviewSection
             templateName={design.templateName}
             layerColors={JSON.parse(design.layerColors)}
-            customText={design.customText}
-            fontFamily={design.fontFamily}
-            textColor={design.textColor}
-            textPosition={JSON.parse(design.textPosition)}
+            texts={design.texts || []}
+            images={design.images || []}
           />
         )}
 

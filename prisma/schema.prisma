@@ -28,6 +28,9 @@ model Design {
   textPosition  String
   fontFamily    String
 
+  texts         Json?  // opcional
+  images        Json?  // opcional
+
   userId        String   @unique
   user          User     @relation(fields: [userId], references: [id])
 }

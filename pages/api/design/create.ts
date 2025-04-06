@@ -31,7 +31,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     customText,
     textColor,
     textPosition,
-    fontFamily
+    fontFamily,
+    texts,
+    images
   } = req.body
 
   try {
@@ -44,19 +46,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         textColor,
         textPosition: JSON.stringify(textPosition),
         fontFamily,
+        texts,    // 👈 esto ya es JSON
+        images    // 👈 esto también
       },
       create: {
+        userId,
         templateName,
         layerColors: JSON.stringify(layerColors),
         customText,
         textColor,
         textPosition: JSON.stringify(textPosition),
         fontFamily,
-        user: {
-          connect: { id: userId },
-        },
-      },
+        texts,
+        images
+      }
     })
+    
     
     
     return res.status(201).json({ message: 'Diseño guardado', design })

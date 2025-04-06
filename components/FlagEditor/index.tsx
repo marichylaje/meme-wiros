@@ -217,7 +217,15 @@ const FlagEditor = ({
           recentColors={recentColors}
           onColorChange={setColor}
           onRecentColorClick={setColor}
-          fontOptions={['Arial', 'Roboto', 'Courier New', 'Georgia']}
+          fontOptions={[
+            'Arial',
+            'Fugaz One',
+            'Academic M54',
+            'Perry Ghotic',
+            'Sunflare',
+            'University',
+            'Pulang',
+          ]}
           selectedFont={selectedFont}
           onAddText={addNewText}
           onFontChange={(font: string) => {

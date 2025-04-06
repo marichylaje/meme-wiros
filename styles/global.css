@@ -1,3 +1,29 @@
 body {
     background-color: #1f2937;
   }
+
+  @font-face {
+    font-family: 'Academic M54';
+    src: url('/fonts/AcademicM54.ttf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'University';
+    src: url('/fonts/University.otf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'Perry Ghotic';
+    src: url('/fonts/PerryGhotic.ttf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'Sunflare';
+    src: url('/fonts/Sunflare.ttf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'Pulang';
+    src: url('/fonts/Pulang.ttf') format('truetype');
+  }
+  
