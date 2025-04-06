@@ -11,7 +11,7 @@ const NavContainer = styled.nav`
   justify-content: space-between;
   align-items: center;
   background-color: #111827;
-  padding: 1rem 2rem;
+  padding: .5rem 2rem;
   color: #f9fafb;
   z-index: 1000;
   width: 100%;
@@ -60,10 +60,8 @@ const Navbar = () => {
     <>
       <NavContainer>
         <Nav>
-          <Brand onClick={() => router.push('/')}>FlagDesigner</Brand>
+          <Brand onClick={() => router.push('/')}><img src="/logo.png" alt="Logo" width={160} /></Brand>
           <Menu>
-            <a href="/about">Sobre Nosotros</a>
-
             {isAuthenticated ? (
               <>
                 {!isProfilePage && (
