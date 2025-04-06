@@ -6,13 +6,14 @@ const ImageWrapper = styled.div<{
   y: number;
   size: number;
   selected: boolean;
+  previewMode: boolean;
 }>`
   position: absolute;
   top: ${(props) => props.y * 100}%;
   left: ${(props) => props.x * 100}%;
   transform: translate(-50%, -50%);
-  width: ${(props) => props.size}px;
-  height: ${(props) => props.size}px;
+  width: ${(props) => props.previewMode ? props.size * .6 : props.size}px;
+  height: ${(props) =>  props.previewMode ? props.size * .6 : props.size}px;
   cursor: move;
   z-index: ${(props) => (props.selected ? 100001 : 100000)};
   border: ${(props) => (props.selected ? '1px dashed #000' : 'none')};
@@ -45,6 +46,7 @@ type ImageOverlayProps = {
   setSize: (size: number) => void;
   selected: boolean;
   setSelected: () => void;
+  previewMode: boolean;
 };
 
 const ImageOverlay = ({
@@ -55,6 +57,7 @@ const ImageOverlay = ({
   setSize,
   selected,
   setSelected,
+  previewMode,
 }: ImageOverlayProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -102,6 +105,7 @@ const ImageOverlay = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      previewMode={previewMode}
     >
       <OverlayImage src={src} />
       {selected && <Resizer onMouseDown={() => setIsResizing(true)} />}

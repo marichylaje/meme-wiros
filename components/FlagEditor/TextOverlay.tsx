@@ -11,6 +11,7 @@ const Overlay = styled.div<{
   fontSize: number;
   filled: boolean;
   strokeWidth: number;
+  previewMode: boolean;
 }>`
   position: absolute;
   top: ${(props) => props.y * 100}%;
@@ -18,7 +19,7 @@ const Overlay = styled.div<{
   transform: translate(-50%, -50%);
   color: ${(props) => props.color};
   font-family: ${(props) => props.fontFamily};
-  font-size: ${(props) => props.fontSize}px;
+  font-size: ${(props) => props.previewMode ? props.fontSize * 0.6 :  props.fontSize}px;
   font-weight: ${(props) => (props.filled ? 'bold' : 'normal')};
   -webkit-text-stroke: ${(props) =>
     props.filled ? '0px' : `${props.strokeWidth}px #000`};
@@ -161,6 +162,7 @@ const TextOverlay = ({
           e.stopPropagation(); // 🚫 detiene el click para que no suba al canvas
           setLastSelectedTarget(); // activa selección
         }}
+        previewMode={previewMode}
       >
         {text}
         {selected && <Resizer onMouseDown={() => setIsResizing(true)} />}
