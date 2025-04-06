@@ -22,6 +22,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex: 1;
+  padding-right: 30px;
 `;
 
 const CanvasWrapper = styled.div`
@@ -57,16 +58,30 @@ type FlagEditorProps = {
   layerColors: string[];
   setLayerColors: React.Dispatch<React.SetStateAction<string[]>>;
   handleLoadSavedDesign: () => void;
+
+  texts: TextElement[];
+  setTexts: React.Dispatch<React.SetStateAction<TextElement[]>>;
+  images: ImageElement[];
+  setImages: React.Dispatch<React.SetStateAction<ImageElement[]>>;
 };
+
 
 const pastelPalette = ['#3B82F6', '#8B5CF6', '#F43F5E', '#FBBF24', '#10B981', '#F87171', '#60A5FA', '#F472B6', '#34D399', '#FB923C'];
 
-const FlagEditor = ({ templateName, sides, layerColors, setLayerColors, handleLoadSavedDesign }: FlagEditorProps) => {
+const FlagEditor = ({ 
+  templateName,
+  sides,
+  layerColors,
+  setLayerColors,
+  handleLoadSavedDesign,
+  texts,
+  setTexts,
+  images,
+  setImages
+}: FlagEditorProps) => {
   const { color, setColor } = useColor();
   const { isModalOpen } = useModal();
 
-  const [texts, setTexts] = useState<TextElement[]>([]);
-  const [images, setImages] = useState<ImageElement[]>([]);
   const [selectedTextId, setSelectedTextId] = useState<string | null>(null);
   const [selectedLayer, setSelectedLayer] = useState<number | null>(null);
   const [recentColors, setRecentColors] = useState<string[]>([]);
@@ -242,6 +257,7 @@ const FlagEditor = ({ templateName, sides, layerColors, setLayerColors, handleLo
             setLastSelectedTarget={setLastSelectedTarget}
             images={images}
             setImages={setImages}
+            previewMode={false}
           />
 
           <LayersControls

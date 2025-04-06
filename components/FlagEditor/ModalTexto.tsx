@@ -58,7 +58,7 @@ const ModalTexto = ({
           onChange={(e) => setText(e.target.value)}
         />
 
-        <button onClick={handleSave} style={{ color: 'black', backgroundColor: '#10b981' }}>
+        <button onClick={handleSave} style={{ color: 'black', backgroundColor: '#10b981' }}> //3b82f6
           Aceptar
         </button>
         <button onClick={onClose} style={{ color: 'black', backgroundColor: '#ef4444' }}>

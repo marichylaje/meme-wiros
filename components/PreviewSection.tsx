@@ -1,31 +1,41 @@
 import styled from 'styled-components';
+import CanvasArea from './FlagEditor/CanvasArea';
+import { maxHeaderSize } from 'http';
 
 const PreviewContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 1.5rem;
+  gap: 2rem;
+  margin-top: 2rem;
 `;
 
 const PreviewBox = styled.div`
   position: relative;
-  width: 200px;
+  width: auto;
+  height: 300px;
   aspect-ratio: 2700 / 2100;
-  border: 2px solid #374151;
-  border-radius: 8px;
   overflow: hidden;
-  background-color: #111827;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 `;
 
-// Las mismas capas que el editor, pero para previews
+const LayerImage = styled.img<{ zIndex: number; opacity?: number }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 300px;
+  object-fit: contain;
+  z-index: ${(props) => props.zIndex};
+  opacity: ${(props) => props.opacity ?? 1};
+`;
+
 const PreviewLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string }>`
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
   height: 100%;
+  width: 100%;
   z-index: ${(props) => props.zIndex};
   background-color: ${(props) => props.color};
+  opacity: 0.2;
 
   mask-image: url(${(props) => props.$maskUrl});
   mask-repeat: no-repeat;
@@ -38,88 +48,88 @@ const PreviewLayer = styled.div<{ zIndex: number; color: string; $maskUrl: strin
   -webkit-mask-size: contain;
 `;
 
-const PreviewFrameOverlay = styled.img`
+const FlagText = styled.div<{
+  x: number;
+  y: number;
+  color: string;
+  fontFamily: string;
+}>`
   position: absolute;
-  top: 158px;
-  left: 50%;
-  width: 850px; // o lo que necesites exactamente
-  height: 245px;
+  top: ${(props) => props.y * 100}%;
+  left: ${(props) => props.x * 100}%;
   transform: translate(-50%, -50%);
-  z-index: 20;
+  color: ${(props) => props.color};
+  font-family: ${(props) => props.fontFamily};
+  font-size: 18px;
+  white-space: nowrap;
   pointer-events: none;
+  z-index: 20;
+  opacity: 0.2;
 `;
-
-const PreviewFullLayer = styled.div<{ color: string; $maskUrl: string }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  background-color: ${(props) => props.color};
-
-  mask-image: url(${(props) => props.$maskUrl});
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-
-  -webkit-mask-image: url(${(props) => props.$maskUrl});
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-`;
-
 
 type PreviewSectionProps = {
-    templateName: string;
-    layerColors: string[];
-    customText: string;
+  templateName: string;
+  layerColors: string[];
+  texts: {
+    id: string;
+    text: string;
+    color: string;
     fontFamily: string;
-    textColor: string;
-    textPosition: { x: number; y: number };
-  };
-  
+    fontSize: number;
+    filled: boolean;
+    strokeWidth: number;
+    position: { x: number; y: number };
+  }[];
+  images: {
+    id: string;
+    src: string;
+    position: { x: number; y: number };
+    size: number;
+    color: string;
+  }[];
+};
 
-const PreviewSection = ({ templateName, layerColors, customText, fontFamily, textColor, textPosition }: PreviewSectionProps) => {
-    console.log({customText})
+const PreviewSection = ({
+  templateName,
+  layerColors,
+  texts,
+  images,
+}: PreviewSectionProps) => {
+  const previews = ['A', 'B', 'C'];
+
   return (
-    <div style={{position: 'relative', marginBottom: '100px'}}>
-      <h2 style={{ textAlign: 'center', color: 'black', position: 'relative', paddingTop: '15px', top: '15px', zIndex: 999 }}>Vista previa</h2>
-      <PreviewFrameOverlay src="/vista-previa.png" alt="Vista previa marco" />
+    <div style={{ marginBottom: '3rem' }}>
+      <h2 style={{ textAlign: 'center', color: 'white' }}>Vista previa</h2>
       <PreviewContainer>
-        {[1, 2, 3].map((i) => (
-            <PreviewBox key={i}>
-                {Array.from({ length: layerColors.length }, (_, index) => (
-                    <PreviewLayer
-                        key={index}
-                        zIndex={index + 1}
-                        color={layerColors[index]}
-                        $maskUrl={`/templates/${templateName}/img${index + 1}.png`}
-                    />
-                ))}
-                {customText && (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: `${textPosition.y * 100}%`,
-                            left: `${textPosition.x * 100}%`,
-                            transform: 'translate(-50%, -50%)',
-                            color: textColor,
-                            fontFamily,
-                            fontSize: '18px',
-                            textAlign: 'center',
-                            zIndex: 15,
-                            pointerEvents: 'none',
-                            userSelect: 'none',
-                            whiteSpace: 'nowrap',
-                        }}
-                        >
-                            {customText}
-                    </div>
-                )}
-
-            </PreviewBox>
-            
+        {previews.map((letter, key) => (
+          <PreviewBox key={letter}>
+            {/* 1️⃣ Fondo visible del wiro */}
+            <LayerImage
+              src={`/wiros/wiro${letter}Visible.png`}
+              alt={`wiro${letter}`}
+              zIndex={1}
+              style={{ left: key === 0 ? '40px' : '84px' }}
+            />
+            <CanvasArea
+              templateName={templateName}
+              sides={layerColors.length - 1}
+              layerColors={layerColors}
+              texts={texts}
+              images={images}
+              previewMode={true}
+              style={{
+                left: key === 0 ? '115px' : key === 1 ? '25px' : '-85px',
+                top: '35px',
+                maxHeight: '230px',
+              }}
+            />
+            {/* 5️⃣ Capa superior invisible (marco wiro) */}
+            <LayerImage
+              src={`/wiros/wiro${letter}Invisible.png`}
+              alt={`overlay${letter}`}
+              zIndex={999999999}
+            />
+          </PreviewBox>
         ))}
       </PreviewContainer>
     </div>

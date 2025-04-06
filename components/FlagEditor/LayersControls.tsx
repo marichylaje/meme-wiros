@@ -89,7 +89,7 @@ useEffect(() => {
           <Button
             onClick={handleLoadSavedDesign}
           >
-            Ver seleccionada
+            Cargar diseño guardado
           </Button>
         )}
 

@@ -72,6 +72,7 @@ type TextOverlayProps = {
   onDelete: () => void;
   strokeWidth: number;
   onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  previewMode: boolean;
 };
 
 const TextOverlay = ({
@@ -88,13 +89,13 @@ const TextOverlay = ({
   onTextChange,
   onDelete,
   strokeWidth,
-  onClick
+  onClick,
+  previewMode
 }: TextOverlayProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [editing, setEditing] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
-  console.log({selected})
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -104,7 +105,7 @@ const TextOverlay = ({
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const parent = overlayRef.current?.parentElement;
-    if (!parent) return;
+    if (!parent || previewMode) return;
 
     const bounds = parent.getBoundingClientRect();
 

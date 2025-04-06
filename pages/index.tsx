@@ -21,7 +21,7 @@ const AppWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: auto;
 `
 
@@ -73,25 +73,47 @@ const FloatingSaveButton = styled(Button)`
   &:active {
     transform: scale(0.98);
   }
-`;
+`
 
+type TextElement = {
+  id: string;
+  text: string;
+  fontFamily: string;
+  color: string;
+  fontSize: number;
+  filled: boolean;
+  strokeWidth: number;
+  position: { x: number; y: number };
+}
+
+type ImageElement = {
+  id: string;
+  src: string;
+  position: { x: number; y: number };
+  size: number;
+  color: string;
+}
 
 const STORAGE_KEY = 'templateColors'
 
 const HomePage = () => {
   const { user, isAuthenticated } = useAuth()
+  const { setSavedDesign } = useDesign()
+
   const [templates, setTemplates] = useState<{ name: string; preview: string; sides: number }[]>([])
   const [currentTemplateName, setCurrentTemplateName] = useState('')
   const [currentSides, setCurrentSides] = useState(0)
 
   const [templateColors, setTemplateColors] = useState<Record<string, string[]>>({})
   const [layerColors, setLayerColors] = useState<string[]>([])
-  const { setSavedDesign } = useDesign()
 
   const [customText, setCustomText] = useState('')
   const [fontFamily, setFontFamily] = useState('Arial')
   const [textColor, setTextColor] = useState('#FFFFFF')
   const [textPosition, setTextPosition] = useState({ x: 0.5, y: 0.5 })
+
+  const [texts, setTexts] = useState<TextElement[]>([])
+  const [images, setImages] = useState<ImageElement[]>([])
 
   const generateRandomColor = () => {
     const letters = '0123456789ABCDEF'
@@ -138,23 +160,17 @@ const HomePage = () => {
         setCurrentSides(initial.sides)
 
         const existing = storedColors[initial.name] || []
-
-        // ⚠️ Solo generamos los que faltan
         const missingCount = initial.sides + 1 - existing.length
         const extraColors = missingCount > 0
           ? Array.from({ length: missingCount }, generateRandomColor)
           : []
 
         const finalColors = [...existing, ...extraColors]
-        const updatedColors = {
-          ...storedColors,
-          [initial.name]: finalColors
-        }
+        const updatedColors = { ...storedColors, [initial.name]: finalColors }
 
         setTemplateColors(updatedColors)
         setLayerColors(finalColors.slice(0, initial.sides + 1))
         storeColors(updatedColors)
-
       }
     }
 
@@ -164,46 +180,25 @@ const HomePage = () => {
   const handleTemplateChange = (templateName: string) => {
     const selected = templates.find((t) => t.name === templateName)
     if (!selected) return
-  
+
     setCurrentTemplateName(selected.name)
     setCurrentSides(selected.sides)
-  
+
     const existing = templateColors[templateName] || []
-  
-    // Calcular si hay que generar colores nuevos (solo si faltan)
     const missingCount = selected.sides + 1 - existing.length
     const extraColors = missingCount > 0
       ? Array.from({ length: missingCount }, generateRandomColor)
       : []
-  
-    // Crear el array final preservando los colores anteriores
+
     const finalColors = [...existing, ...extraColors]
-  
-    // Actualizar el mapa general y guardar en localStorage
-    const updated = {
-      ...templateColors,
-      [templateName]: finalColors,
-    }
-  
+    const updated = { ...templateColors, [templateName]: finalColors }
+
     setTemplateColors(updated)
     setLayerColors(finalColors.slice(0, selected.sides + 1))
     storeColors(updated)
   }
-  
-  
-  
 
   const handleSubmitDesign = async () => {
-    const send = {
-      templateName: currentTemplateName,
-      layerColors,
-      customText,
-      textColor,
-      textPosition,
-      fontFamily,
-    }
-
-    console.log({send})
     if (!isAuthenticated || !user?.id) {
       toast.error('Debes iniciar sesión para guardar el diseño.')
       return
@@ -246,28 +241,26 @@ const HomePage = () => {
   const handleLoadSavedDesign = async () => {
     const token = localStorage.getItem('token')
     if (!token) return toast.error('Token no encontrado')
-  
+
     try {
       const res = await fetch('/api/design/get', {
         headers: { Authorization: `Bearer ${token}` }
       })
-  
+
       if (!res.ok) throw new Error('No se encontró diseño')
-  
+
       const data = await res.json()
-  
+
       setCurrentTemplateName(data.templateName)
       const template = templates.find(t => t.name === data.templateName)
-      if (template) {
-        setCurrentSides(template.sides)
-      }
-  
+      if (template) setCurrentSides(template.sides)
+
       setLayerColors(JSON.parse(data.layerColors))
       setCustomText(data.customText)
       setFontFamily(data.fontFamily)
       setTextColor(data.textColor)
       setTextPosition(JSON.parse(data.textPosition))
-  
+
       setSavedDesign({
         templateName: data.templateName,
         layerColors: JSON.parse(data.layerColors),
@@ -276,7 +269,7 @@ const HomePage = () => {
         textColor: data.textColor,
         textPosition: JSON.parse(data.textPosition)
       })
-  
+
       toast.success('Diseño cargado con éxito')
     } catch (err) {
       toast.error('No se pudo cargar el diseño')
@@ -289,25 +282,28 @@ const HomePage = () => {
         <Navbar />
         <MainContainer>
           <Content>
-          <FlagEditor
-            templateName={currentTemplateName}
-            sides={currentSides}
-            layerColors={layerColors}
-            setLayerColors={setLayerColors}
-            handleLoadSavedDesign={handleLoadSavedDesign}
-          />
+            <FlagEditor
+              templateName={currentTemplateName}
+              sides={currentSides}
+              layerColors={layerColors}
+              setLayerColors={setLayerColors}
+              handleLoadSavedDesign={handleLoadSavedDesign}
+              texts={texts}
+              setTexts={setTexts}
+              images={images}
+              setImages={setImages}
+            />
+
             <FloatingSaveButton onClick={handleSubmitDesign}>
               GUARDAR DISEÑO
             </FloatingSaveButton>
+
             <PreviewSection
               templateName={currentTemplateName}
               layerColors={layerColors}
-              customText={customText}
-              fontFamily={fontFamily}
-              textColor={textColor}
-              textPosition={textPosition}
+              texts={texts}
+              images={images}
             />
-
           </Content>
 
           <SidebarRight>

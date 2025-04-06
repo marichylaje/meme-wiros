@@ -6,7 +6,6 @@ import ImageOverlay from './ImageOverlay';
 const AspectRatioBox = styled.div`
   border-radius: 1rem;
   position: relative;
-  width: 600px;  // ✨ tamaño fijo
   height: 452px; // ✨ tamaño fijo
   aspect-ratio: 2700 / 2100;
   background-color: #eee;
@@ -15,7 +14,7 @@ const AspectRatioBox = styled.div`
 `;
 
 
-const MaskedLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string }>`
+const MaskedLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string, previewMode: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
@@ -31,6 +30,7 @@ const MaskedLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
+  opacity: ${({ previewMode }) => (previewMode ? 0.6: 1)};
 `;
 
 type CanvasAreaProps = {
@@ -47,10 +47,10 @@ type CanvasAreaProps = {
     strokeWidth: number;
     position: { x: number; y: number };
   }[];
-  setTexts: React.Dispatch<React.SetStateAction<any[]>>;
-  selectedTextId: string | null;
-  setSelectedTextId: (id: string | null) => void;
-  setLastSelectedTarget: (target: 'text' | 'layer' | 'image' | null) => void;
+  setTexts?: React.Dispatch<React.SetStateAction<any[]>>;
+  selectedTextId?: string | null;
+  setSelectedTextId?: (id: string | null) => void;
+  setLastSelectedTarget?: (target: 'text' | 'layer' | 'image' | null) => void;
   images: {
     id: string;
     src: string;
@@ -58,7 +58,9 @@ type CanvasAreaProps = {
     size: number;
     color: string;
   }[];
-  setImages: React.Dispatch<React.SetStateAction<any[]>>;
+  setImages?: React.Dispatch<React.SetStateAction<any[]>>;
+  previewMode?: boolean; // 👈
+  style?: any;
 };
 
 const CanvasArea = ({
@@ -72,6 +74,8 @@ const CanvasArea = ({
   setLastSelectedTarget,
   images,
   setImages,
+  previewMode = false,
+  style
 }: CanvasAreaProps) => {
   const fullimgColor = layerColors[sides];
   const boxRef = useRef<HTMLDivElement>(null);
@@ -137,6 +141,7 @@ const CanvasArea = ({
       onClick={handleCanvasClick}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
+      style={{...style}}
     >
       {Array.from({ length: sides }, (_, index) => {
         const layerColor = layerColors[index];
@@ -147,6 +152,7 @@ const CanvasArea = ({
             zIndex={index + 1}
             color={layerColor}
             $maskUrl={`/templates/${templateName}/img${index + 1}.png`}
+            previewMode={previewMode}
           />
         );
       })}
@@ -156,7 +162,8 @@ const CanvasArea = ({
           zIndex={sides + 1}
           color={fullimgColor}
           $maskUrl={`/templates/${templateName}/fullimg.png`}
-        />
+          previewMode={previewMode}
+          />
       )}
 
       {texts.map((textObj) => (
@@ -180,6 +187,7 @@ const CanvasArea = ({
           filled={textObj.filled}
           strokeWidth={textObj.strokeWidth}
           setLastSelectedTarget={() => {
+            if (previewMode) return;
             setLastSelectedTarget('text');
             setSelectedTextId(textObj.id);
             setSelectedImageId(null);
@@ -194,6 +202,7 @@ const CanvasArea = ({
               prev.map((t) => (t.id === textObj.id ? { ...t, text: newText } : t))
             )
           }
+          previewMode={previewMode}
         />
       ))}
 
