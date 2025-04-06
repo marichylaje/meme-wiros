@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { useRouter } from 'next/router'
+import Button from './ui/Button';
 
 const Form = styled.form`
   display: flex;
@@ -14,19 +15,6 @@ const Input = styled.input`
   padding: 0.75rem;
   border-radius: 8px;
   border: 1px solid #ccc;
-`
-
-const Button = styled.button`
-  background-color: #3b82f6;
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #2563eb;
-  }
 `
 
 const RegisterForm = ({ onClose }: { onClose: () => void }) => {

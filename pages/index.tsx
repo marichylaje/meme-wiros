@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { useDesign } from '../context/DesignContext'
+import Button from '../components/ui/Button'
 
 const PageWrapper = styled.div`
   display: flex;
@@ -38,6 +39,7 @@ const Content = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   overflow-y: auto;
+  margin-top: 50px;
 `
 
 const SidebarRight = styled.div`
@@ -49,22 +51,30 @@ const SidebarRight = styled.div`
   overflow-y: auto;
 `
 
-const SelectButton = styled.button`
-  margin: 2rem auto 1rem;
-  padding: 1rem 2rem;
-  background-color: #10b981;
+const FloatingSaveButton = styled(Button)`
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  background-color: #10B981;
   color: white;
-  font-size: 1.1rem;
-  font-weight: bold;
-  border: none;
+  padding: 1.2rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
   border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.3s;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
 
   &:hover {
+    transform: scale(1.05);
     background-color: #059669;
   }
-`
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
 
 const STORAGE_KEY = 'templateColors'
 
@@ -127,16 +137,24 @@ const HomePage = () => {
         setCurrentTemplateName(initial.name)
         setCurrentSides(initial.sides)
 
-        const existing = storedColors[initial.name]
-        if (existing) {
-          setLayerColors(existing.slice(0, initial.sides + 1))
-        } else {
-          const randomColors = Array.from({ length: initial.sides + 1 }, generateRandomColor)
-          const updated = { ...storedColors, [initial.name]: randomColors }
-          setLayerColors(randomColors)
-          setTemplateColors(updated)
-          storeColors(updated)
+        const existing = storedColors[initial.name] || []
+
+        // ⚠️ Solo generamos los que faltan
+        const missingCount = initial.sides + 1 - existing.length
+        const extraColors = missingCount > 0
+          ? Array.from({ length: missingCount }, generateRandomColor)
+          : []
+
+        const finalColors = [...existing, ...extraColors]
+        const updatedColors = {
+          ...storedColors,
+          [initial.name]: finalColors
         }
+
+        setTemplateColors(updatedColors)
+        setLayerColors(finalColors.slice(0, initial.sides + 1))
+        storeColors(updatedColors)
+
       }
     }
 
@@ -146,23 +164,46 @@ const HomePage = () => {
   const handleTemplateChange = (templateName: string) => {
     const selected = templates.find((t) => t.name === templateName)
     if (!selected) return
-
+  
     setCurrentTemplateName(selected.name)
     setCurrentSides(selected.sides)
-
-    const existing = templateColors[templateName]
-    if (existing) {
-      setLayerColors(existing.slice(0, selected.sides + 1))
-    } else {
-      const randomColors = Array.from({ length: selected.sides + 1 }, generateRandomColor)
-      const updated = { ...templateColors, [templateName]: randomColors }
-      setLayerColors(randomColors)
-      setTemplateColors(updated)
-      storeColors(updated)
+  
+    const existing = templateColors[templateName] || []
+  
+    // Calcular si hay que generar colores nuevos (solo si faltan)
+    const missingCount = selected.sides + 1 - existing.length
+    const extraColors = missingCount > 0
+      ? Array.from({ length: missingCount }, generateRandomColor)
+      : []
+  
+    // Crear el array final preservando los colores anteriores
+    const finalColors = [...existing, ...extraColors]
+  
+    // Actualizar el mapa general y guardar en localStorage
+    const updated = {
+      ...templateColors,
+      [templateName]: finalColors,
     }
+  
+    setTemplateColors(updated)
+    setLayerColors(finalColors.slice(0, selected.sides + 1))
+    storeColors(updated)
   }
+  
+  
+  
 
   const handleSubmitDesign = async () => {
+    const send = {
+      templateName: currentTemplateName,
+      layerColors,
+      customText,
+      textColor,
+      textPosition,
+      fontFamily,
+    }
+
+    console.log({send})
     if (!isAuthenticated || !user?.id) {
       toast.error('Debes iniciar sesión para guardar el diseño.')
       return
@@ -255,7 +296,9 @@ const HomePage = () => {
             setLayerColors={setLayerColors}
             handleLoadSavedDesign={handleLoadSavedDesign}
           />
-
+            <FloatingSaveButton onClick={handleSubmitDesign}>
+              GUARDAR DISEÑO
+            </FloatingSaveButton>
             <PreviewSection
               templateName={currentTemplateName}
               layerColors={layerColors}
@@ -265,7 +308,6 @@ const HomePage = () => {
               textPosition={textPosition}
             />
 
-            <SelectButton onClick={handleSubmitDesign}>SELECCIONAR DISEÑO</SelectButton>
           </Content>
 
           <SidebarRight>

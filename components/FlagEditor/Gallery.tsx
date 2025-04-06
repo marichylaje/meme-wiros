@@ -1,67 +1,54 @@
-// ✅ Gallery.tsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
-const ScrollContainer = styled.div`
-  display: flex;
-  overflow-x: auto;
-  gap: 1rem;
-  padding: 1rem;
-  background-color: #111827;
+const Wrapper = styled.div`
+  border-radius: 1rem;
   max-height: 250px;
-  border-bottom: 2px solid #374151;
+  max-width: 90%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 1rem;
+  background: #0f172a;
+  border-bottom: 2px solid #334155;
   width: 100%;
+  border: 3px solid black;
 `;
 
-const ShieldItem = styled.img`
-  height: 200px;
+const ShieldImage = styled.img`
+  height: 150px;
+  margin-right: 1rem;
   cursor: pointer;
-  border-radius: 8px;
   transition: transform 0.2s;
-  user-select: none;
 
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
   }
 `;
 
-const Gallery = () => {
-  const [shields, setShields] = useState<string[]>([]);
+type GalleryProps = {
+  onImageSelect: (src: string) => void;
+};
 
-  useEffect(() => {
-    const loadShields = async () => {
-      const imported: string[] = [];
-      for (let i = 1; i <= 20; i++) {
-        try {
-          const path = `/shields/shield${i}.png`;
-          const res = await fetch(path, { method: 'HEAD' });
-          if (res.ok) imported.push(path);
-        } catch (err) {
-          break;
-        }
-      }
-      setShields(imported);
-    };
-    loadShields();
-  }, []);
-
-  const handleDoubleClick = (src: string) => {
-    // TODO: insertar imagen en el canvas
-    alert(`Doble click en imagen: ${src}`);
-  };
+const Gallery = ({ onImageSelect }: GalleryProps) => {
+  const shieldCount = 20;
+  const shields = Array.from({ length: shieldCount }, (_, i) => `/shields/shield${i + 1}.png`);
 
   return (
-    <ScrollContainer>
-      {shields.map((src, index) => (
-        <ShieldItem
-          key={index}
+    <Wrapper>
+      {shields.map((src) => (
+        <ShieldImage
+          key={src}
           src={src}
+          alt="shield"
           draggable
-          onDoubleClick={() => handleDoubleClick(src)}
-          title={`shield${index + 1}`}
+          onDoubleClick={() => onImageSelect(src)}
+          onDragStart={(e) => {
+            e.dataTransfer.setData('text/plain', src);
+          }}
         />
       ))}
-    </ScrollContainer>
+    </Wrapper>
   );
 };
 

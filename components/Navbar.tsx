@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import { useAuth } from '../context/AuthContext';
+import Button from './ui/Button';
 
 const NavContainer = styled.nav`
   display: flex;
@@ -43,21 +44,6 @@ const Menu = styled.div`
   display: flex;
   align-items: center;
   gap: 1.5rem;
-`;
-
-const Button = styled.button`
-  background-color: #3b82f6;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #2563eb;
-  }
 `;
 
 const Navbar = () => {

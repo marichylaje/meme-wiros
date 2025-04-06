@@ -1,31 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { MdTextFields } from 'react-icons/md';
+import Button from '../ui/Button';
+import ColorButton from '../ui/ColorButton';
 
 const Panel = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-`;
-
-const IconButton = styled.button`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: none;
-  background-color: #f3f4f6;
-  color: #111827;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.3s;
-
-  &:hover {
-    transform: scale(1.1);
-    background-color: #e5e7eb;
-  }
 `;
 
 const ColorInput = styled.input`
@@ -42,33 +25,35 @@ const RecentColors = styled.div`
   gap: 0.5rem;
 `;
 
-const RecentColorButton = styled.button<{ color: string }>`
-  width: 40px;
-  height: 40px;
-  background-color: ${(props) => props.color};
-  border: 2px solid #fff;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: scale(1.1);
-  }
+const StyleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 160px;
 `;
 
-const TypoButton = styled.button`
+const StrokeInput = styled.input`
+  width: 2rem;
+  padding: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+`;
+
+const StyledSelect = styled.select`
   padding: 0.5rem 1rem;
-  background-color: #fcd34d;
-  color: #111827;
-  font-weight: bold;
-  border: none;
   border-radius: 8px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #fbbf24;
-  }
+  border: 1px solid #ccc;
+  width: 100%;
+  background-color: #2563eb;
+  color: white;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' viewBox='0 0 24 24' width='24' height='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
 `;
+
 
 type ColorPanelProps = {
   color: string;
@@ -80,7 +65,11 @@ type ColorPanelProps = {
   fontOptions: string[];
   selectedFont: string;
   onFontChange: (font: string) => void;
-  onToggleFilled: any;
+  onToggleFilled: () => void;
+
+  filled: boolean;
+  strokeWidth: number;
+  onStrokeWidthChange: (val: number) => void;
 };
 
 const ColorPanel = ({
@@ -93,34 +82,48 @@ const ColorPanel = ({
   selectedFont,
   onFontChange,
   onToggleFilled,
+  filled,
+  strokeWidth,
+  onStrokeWidthChange
 }: ColorPanelProps) => {
   return (
     <Panel>
-      <IconButton onClick={onAddText} title="Agregar nuevo texto">
-        {(MdTextFields as any)({ size: 24 })}
-      </IconButton>
-
-      <select
+      <Button onClick={onAddText}>
+        Agregar nuevo texto
+      </Button>
+      <StyleRow>
+        <Button style={{ width: '160px', maxWidth: '160px', backgroundColor: `${filled ? '#2563eb' : '#ef4444'}` }} onClick={onToggleFilled}>
+          {!filled ? 'Quitar' : 'Agregar borde texto'}
+        </Button>
+        {!filled && (
+          <>
+            <StrokeInput
+              type="number"
+              min="0"
+              max="9"
+              maxLength={1}
+              value={strokeWidth}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                if (!isNaN(value) && value >= 1 && value <= 9) {
+                  onStrokeWidthChange(value);
+                }
+              }}
+            />
+            <span>px</span>
+          </>
+        )}
+      </StyleRow>
+      <StyledSelect
         value={selectedFont}
         onChange={(e) => onFontChange(e.target.value)}
-        style={{
-          padding: '0.5rem',
-          borderRadius: '8px',
-          border: '1px solid #ccc',
-          width: '100%',
-        }}
       >
         {fontOptions.map((font) => (
           <option key={font} value={font}>
             {font}
           </option>
         ))}
-      </select>
-
-      <TypoButton onClick={onToggleFilled}>
-        Alternar estilo
-      </TypoButton>
-
+      </StyledSelect>
       <ColorInput
         type="color"
         value={color}
@@ -129,7 +132,7 @@ const ColorPanel = ({
 
       <RecentColors>
         {recentColors.map((recent, idx) => (
-          <RecentColorButton
+          <ColorButton
             key={idx}
             color={recent}
             onClick={() => onRecentColorClick(recent)}

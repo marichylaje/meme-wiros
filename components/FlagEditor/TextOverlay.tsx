@@ -1,5 +1,5 @@
 // ✅ TextOverlay.tsx actualizado con doble click para editar
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 
 const Overlay = styled.div<{
@@ -10,6 +10,7 @@ const Overlay = styled.div<{
   selected: boolean;
   fontSize: number;
   filled: boolean;
+  strokeWidth: number;
 }>`
   position: absolute;
   top: ${(props) => props.y * 100}%;
@@ -19,7 +20,8 @@ const Overlay = styled.div<{
   font-family: ${(props) => props.fontFamily};
   font-size: ${(props) => props.fontSize}px;
   font-weight: ${(props) => (props.filled ? 'bold' : 'normal')};
-  -webkit-text-stroke: ${(props) => props.filled ? '0px' : `${Math.max(1, Math.floor(props.fontSize / 30))}px #000`};
+  -webkit-text-stroke: ${(props) =>
+    props.filled ? '0px' : `${props.strokeWidth}px #000`};
   background: transparent;
   user-select: none;
   z-index: ${(props) => (props.selected ? 100001 : 100000)};
@@ -29,7 +31,9 @@ const Overlay = styled.div<{
   white-space: nowrap;
   overflow: visible;
   max-width: none;
+  pointer-events: auto;
 `;
+
 
 const Resizer = styled.div`
   width: 12px;
@@ -64,7 +68,10 @@ type TextOverlayProps = {
   filled: boolean;
   setLastSelectedTarget: () => void;
   selected: boolean;
-  onTextChange: (text: string) => void; // 🆕
+  onTextChange: (text: string) => void;
+  onDelete: () => void;
+  strokeWidth: number;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 const TextOverlay = ({
@@ -79,11 +86,15 @@ const TextOverlay = ({
   setLastSelectedTarget,
   selected,
   onTextChange,
+  onDelete,
+  strokeWidth,
+  onClick
 }: TextOverlayProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [editing, setEditing] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
+  console.log({selected})
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -114,6 +125,20 @@ const TextOverlay = ({
     setIsResizing(false);
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (editing) return; // no eliminar si está editando
+  
+      if (selected && (e.key === 'Backspace' || e.key === 'Delete')) {
+        e.preventDefault();
+        onDelete();
+      }
+    };
+  
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selected, editing]);
+
   return (
     <>
       <Overlay
@@ -130,6 +155,11 @@ const TextOverlay = ({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onDoubleClick={() => setEditing(true)} // 🆕
+        strokeWidth={strokeWidth}
+        onClick={(e) => {
+          e.stopPropagation(); // 🚫 detiene el click para que no suba al canvas
+          setLastSelectedTarget(); // activa selección
+        }}
       >
         {text}
         {selected && <Resizer onMouseDown={() => setIsResizing(true)} />}

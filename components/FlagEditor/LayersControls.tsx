@@ -2,21 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext'
 import { useRouter } from 'next/router'
-
-const ViewSavedButton = styled.button`
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  background-color: #3b82f6;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #2563eb;
-  }
-`
+import Button from '../ui/Button';
 
 const ButtonGroup = styled.div`
   display: flex;
@@ -33,15 +19,6 @@ const LayerButton = styled.button<{ selected: boolean }>`
   background-color: ${(props) => (props.selected ? '#bfdbfe' : '#f3f4f6')};
   cursor: pointer;
   font-weight: 500;
-`;
-
-const ApplyButton = styled.button`
-  background-color: #10b981;
-  color: #fff;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
 `;
 
 const LayersControls = ({
@@ -81,34 +58,39 @@ useEffect(() => {
     return (
       <ButtonGroup>
         {Array.from({ length: sides }, (_, index) => (
-          <LayerButton
-            key={index}
-            selected={selectedLayer === index}
-            onClick={() => setSelectedLayer(index)}
-          >
-            Lado {index + 1}
-          </LayerButton>
+          <Button
+          key={index}
+          onClick={() => setSelectedLayer(index)}
+          style={{
+            border: `2px solid ${selectedLayer === index ? '#3b82f6' : '#ccc'}`,
+            backgroundColor: selectedLayer === index ? '#1f2937' : '#3b82f6',
+          }}
+        >
+          Lado {index + 1}
+        </Button>
+        
         ))}
-        <ApplyButton
+        <Button
           onClick={applyColor}
           disabled={selectedLayer === null}
+          style={{background: '#10B981'}}
         >
           Aplicar Color
-        </ApplyButton>
+        </Button>
   
-        <ApplyButton
+        <Button
           onClick={removeColor}
           disabled={selectedLayer === null}
           style={{ backgroundColor: '#ef4444' }}
         >
           Eliminar Color
-        </ApplyButton>
+        </Button>
         {savedDesign && (
-          <ViewSavedButton
+          <Button
             onClick={handleLoadSavedDesign}
           >
             Ver seleccionada
-          </ViewSavedButton>
+          </Button>
         )}
 
       </ButtonGroup>

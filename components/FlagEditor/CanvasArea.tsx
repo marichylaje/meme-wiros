@@ -1,19 +1,19 @@
-// ✅ CanvasArea.tsx corregido
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import TextOverlay from './TextOverlay';
+import ImageOverlay from './ImageOverlay';
 
 const AspectRatioBox = styled.div`
+  border-radius: 1rem;
   position: relative;
-  max-height: 50vh;
-  width: 80%;
-  margin: auto;
-  height: 100%;
+  width: 600px;  // ✨ tamaño fijo
+  height: 452px; // ✨ tamaño fijo
   aspect-ratio: 2700 / 2100;
   background-color: #eee;
   overflow: hidden;
   border: 2px solid #ccc;
 `;
+
 
 const MaskedLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string }>`
   position: absolute;
@@ -44,12 +44,21 @@ type CanvasAreaProps = {
     fontFamily: string;
     fontSize: number;
     filled: boolean;
+    strokeWidth: number;
     position: { x: number; y: number };
   }[];
   setTexts: React.Dispatch<React.SetStateAction<any[]>>;
   selectedTextId: string | null;
-  setSelectedTextId: (id: string) => void;
-  setLastSelectedTarget: (target: 'text' | 'layer') => void;
+  setSelectedTextId: (id: string | null) => void;
+  setLastSelectedTarget: (target: 'text' | 'layer' | 'image' | null) => void;
+  images: {
+    id: string;
+    src: string;
+    position: { x: number; y: number };
+    size: number;
+    color: string;
+  }[];
+  setImages: React.Dispatch<React.SetStateAction<any[]>>;
 };
 
 const CanvasArea = ({
@@ -61,11 +70,74 @@ const CanvasArea = ({
   selectedTextId,
   setSelectedTextId,
   setLastSelectedTarget,
+  images,
+  setImages,
 }: CanvasAreaProps) => {
   const fullimgColor = layerColors[sides];
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const src = e.dataTransfer.getData('text/plain');
+    if (!src) return;
+
+    const bounds = boxRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+
+    const x = (e.clientX - bounds.left) / bounds.width;
+    const y = (e.clientY - bounds.top) / bounds.height;
+
+    const newImage = {
+      id: crypto.randomUUID(),
+      src,
+      position: { x, y },
+      size: 100,
+      color: '#000',
+    };
+
+    setImages((prev) => [...prev, newImage]);
+    setSelectedImageId(newImage.id);
+    setLastSelectedTarget('image');
+  };
+
+  useEffect(() => {
+    const handleDelete = (e: KeyboardEvent) => {
+      if (e.key === 'Delete') {
+        if (selectedImageId) {
+          setImages((prev) => prev.filter((img) => img.id !== selectedImageId));
+          setSelectedImageId(null);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleDelete);
+    return () => window.removeEventListener('keydown', handleDelete);
+  }, [selectedImageId]);
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Si se hace click en el fondo (no en un hijo)
+    console.log("CANVAS CLICKK")
+    if (e.target === boxRef.current) {
+      setSelectedTextId(null);
+      setSelectedImageId(null);
+      setLastSelectedTarget(null);
+    }
+  };
+
+  const handleTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Si se hace click en el fondo (no en un hijo)
+    setTimeout(() => {
+      console.log("TEXT CLICKK")
+    }, 100)
+  };
 
   return (
-    <AspectRatioBox>
+    <AspectRatioBox
+      ref={boxRef}
+      onClick={handleCanvasClick}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+    >
       {Array.from({ length: sides }, (_, index) => {
         const layerColor = layerColors[index];
         if (!layerColor || layerColor.trim() === '' || layerColor === 'transparent') return null;
@@ -93,23 +165,60 @@ const CanvasArea = ({
           text={textObj.text}
           position={textObj.position}
           setPosition={(pos) =>
-            setTexts((prev) => prev.map((t) => t.id === textObj.id ? { ...t, position: pos } : t))
+            setTexts((prev) =>
+              prev.map((t) => (t.id === textObj.id ? { ...t, position: pos } : t))
+            )
           }
           color={textObj.color}
           fontFamily={textObj.fontFamily}
           fontSize={textObj.fontSize}
           setFontSize={(size) =>
-            setTexts((prev) => prev.map((t) => t.id === textObj.id ? { ...t, fontSize: size } : t))
+            setTexts((prev) =>
+              prev.map((t) => (t.id === textObj.id ? { ...t, fontSize: size } : t))
+            )
           }
           filled={textObj.filled}
+          strokeWidth={textObj.strokeWidth}
           setLastSelectedTarget={() => {
             setLastSelectedTarget('text');
             setSelectedTextId(textObj.id);
+            setSelectedImageId(null);
           }}
+          onClick={handleTextClick}
+          onDelete={() =>
+            setTexts((prev) => prev.filter((t) => t.id !== textObj.id))
+          }
           selected={selectedTextId === textObj.id}
           onTextChange={(newText) =>
-            setTexts((prev) => prev.map((t) => t.id === textObj.id ? { ...t, text: newText } : t))
+            setTexts((prev) =>
+              prev.map((t) => (t.id === textObj.id ? { ...t, text: newText } : t))
+            )
           }
+        />
+      ))}
+
+      {images.map((img) => (
+        <ImageOverlay
+          key={img.id}
+          src={img.src}
+          position={img.position}
+          setPosition={(pos) =>
+            setImages((prev) =>
+              prev.map((i) => (i.id === img.id ? { ...i, position: pos } : i))
+            )
+          }
+          size={img.size}
+          setSize={(size) =>
+            setImages((prev) =>
+              prev.map((i) => (i.id === img.id ? { ...i, size } : i))
+            )
+          }
+          selected={selectedImageId === img.id}
+          setSelected={() => {
+            setSelectedImageId(img.id);
+            setLastSelectedTarget('image');
+            setSelectedTextId(null);
+          }}
         />
       ))}
     </AspectRatioBox>
