@@ -228,6 +228,7 @@ const CanvasArea = ({
             setLastSelectedTarget('image');
             setSelectedTextId(null);
           }}
+          previewMode={previewMode}
         />
       ))}
     </AspectRatioBox>
