@@ -16,21 +16,28 @@ model User {
   cantidad       Int
   anioEgreso     Int
 
-  design         Design?  // Relación 1:1 (no necesita fields ni references acá)
+  estado         Estado   @default(POR_HACER) // ✅ Enum para estado
+  pagado         Boolean  @default(false)     // ✅ Indica si ya pagó
+  senia          Float    @default(0)         // ✅ Monto de seña
+  admin          Boolean  @default(false)
+
+  design         Design?                      // Relación 1:1
 }
 
 model Design {
   id            String   @id @default(cuid())
   templateName  String
   layerColors   String
-  customText    String
-  textColor     String
-  textPosition  String
-  fontFamily    String
-
-  texts         Json?  // opcional
-  images        Json?  // opcional
+  texts         Json?
+  images        Json?
 
   userId        String   @unique
   user          User     @relation(fields: [userId], references: [id])
+}
+
+enum Estado {
+  POR_HACER
+  EN_PROCESO
+  HECHO
+  ENTREGADO
 }

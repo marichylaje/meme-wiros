@@ -13,7 +13,7 @@ const NavContainer = styled.nav`
   background-color: #111827;
   padding: .5rem 2rem;
   color: #f9fafb;
-  z-index: 1000;
+  z-index: 30;
   width: 100%;
   position: fixed;
   left: 0;

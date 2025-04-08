@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const valid = await bcrypt.compare(password, user.password)
   if (!valid) return res.status(401).json({ error: 'Contraseña incorrecta' })
 
-  const token = signToken({ id: user.id, email: user.email })
+  const token = signToken({ id: user.id, email: user.email, admin: user.admin })
   setTokenCookie(res, token)
 
   res.status(200).json({

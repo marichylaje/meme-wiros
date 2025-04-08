@@ -4,10 +4,6 @@ import { createContext, useContext, useState, ReactNode } from 'react'
 type DesignData = {
   templateName: string
   layerColors: string[]
-  customText: string
-  fontFamily: string
-  textColor: string
-  textPosition: { x: number; y: number }
 }
 
 type DesignContextType = {

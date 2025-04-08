@@ -55,7 +55,7 @@ const FloatingSaveButton = styled(Button)`
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  z-index: 9999;
+  z-index: 12;
   background-color: #10B981;
   color: white;
   padding: 1.2rem 2rem;
@@ -107,10 +107,6 @@ const HomePage = () => {
   const [templateColors, setTemplateColors] = useState<Record<string, string[]>>({})
   const [layerColors, setLayerColors] = useState<string[]>([])
 
-  const [customText, setCustomText] = useState('')
-  const [fontFamily, setFontFamily] = useState('Arial')
-  const [textColor, setTextColor] = useState('#FFFFFF')
-  const [textPosition, setTextPosition] = useState({ x: 0.5, y: 0.5 })
 
   const [texts, setTexts] = useState<TextElement[]>([])
   const [images, setImages] = useState<ImageElement[]>([])
@@ -225,10 +221,6 @@ const HomePage = () => {
         body: JSON.stringify({
           templateName: currentTemplateName,
           layerColors,
-          customText,
-          textColor,
-          textPosition,
-          fontFamily,
           texts,
           images
         })
@@ -263,20 +255,12 @@ const HomePage = () => {
       if (template) setCurrentSides(template.sides)
 
       setLayerColors(JSON.parse(data.layerColors))
-      setCustomText(data.customText)
-      setFontFamily(data.fontFamily)
-      setTextColor(data.textColor)
-      setTextPosition(JSON.parse(data.textPosition))
       setTexts(data.texts || []);
       setImages(data.images || []);
       
       setSavedDesign({
         templateName: data.templateName,
         layerColors: JSON.parse(data.layerColors),
-        customText: data.customText,
-        fontFamily: data.fontFamily,
-        textColor: data.textColor,
-        textPosition: JSON.parse(data.textPosition)
       })
 
       toast.success('Diseño cargado con éxito')

@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
+//TODO: ELIMINAR DB DESIGN UNUSED TEXT INDIVIDUAL FIELDS
+
 const ImageWrapper = styled.div<{
   x: number;
   y: number;
@@ -15,7 +17,7 @@ const ImageWrapper = styled.div<{
   width: ${(props) => props.previewMode ? props.size * .6 : props.size}px;
   height: ${(props) =>  props.previewMode ? props.size * .6 : props.size}px;
   cursor: move;
-  z-index: ${(props) => (props.selected ? 100001 : 100000)};
+  z-index: ${(props) => (props.selected ? 11 : 10)};
   border: ${(props) => (props.selected ? '1px dashed #000' : 'none')};
   user-select: none;
 `;
@@ -35,7 +37,7 @@ const Resizer = styled.div`
   bottom: -6px;
   right: -6px;
   cursor: nwse-resize;
-  z-index: 100002;
+  z-index: 11;
 `;
 
 type ImageOverlayProps = {

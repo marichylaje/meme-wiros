@@ -25,7 +25,7 @@ const Overlay = styled.div<{
     props.filled ? '0px' : `${props.strokeWidth}px #000`};
   background: transparent;
   user-select: none;
-  z-index: ${(props) => (props.selected ? 100001 : 100000)};
+  z-index: ${(props) => (props.selected ? 12 : 11)};
   border: ${(props) => (props.selected ? '1px dashed black' : 'none')};
   padding: 4px;
   cursor: move;
@@ -44,7 +44,7 @@ const Resizer = styled.div`
   bottom: -6px;
   right: -6px;
   cursor: nwse-resize;
-  z-index: 100002;
+  z-index: 12;
 `;
 
 const EditableInput = styled.input`
@@ -52,7 +52,7 @@ const EditableInput = styled.input`
   transform: translate(-50%, -50%);
   font-size: 1rem;
   padding: 0.25rem 0.5rem;
-  z-index: 100003;
+  z-index: 13;
   border: 1px solid #ccc;
   border-radius: 6px;
   outline: none;

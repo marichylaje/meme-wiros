@@ -28,10 +28,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const {
     templateName,
     layerColors,
-    customText,
-    textColor,
-    textPosition,
-    fontFamily,
     texts,
     images
   } = req.body
@@ -42,10 +38,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       update: {
         templateName,
         layerColors: JSON.stringify(layerColors),
-        customText,
-        textColor,
-        textPosition: JSON.stringify(textPosition),
-        fontFamily,
         texts,    // 👈 esto ya es JSON
         images    // 👈 esto también
       },
@@ -53,10 +45,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userId,
         templateName,
         layerColors: JSON.stringify(layerColors),
-        customText,
-        textColor,
-        textPosition: JSON.stringify(textPosition),
-        fontFamily,
         texts,
         images
       }

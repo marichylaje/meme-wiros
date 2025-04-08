@@ -4,6 +4,7 @@ import {jwtDecode} from 'jwt-decode'
 type User = {
   id: string
   email: string
+  admin: boolean // 👈 nuevo campo
 }
 
 type AuthContextType = {
@@ -30,19 +31,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (token) {
       try {
         const decoded: any = jwtDecode(token)
-        setUser({ id: decoded.id, email: decoded.email })
+        setUser({
+          id: decoded.id,
+          email: decoded.email,
+          admin: decoded.admin || false, // 👈 asegura fallback a false
+        })
       } catch (err) {
         localStorage.removeItem('token')
         setUser(null)
       }
     }
   }, [])
-
+  
   const login = (token: string) => {
     localStorage.setItem('token', token)
     const decoded: any = jwtDecode(token)
-    setUser({ id: decoded.id, email: decoded.email })
+    setUser({
+      id: decoded.id,
+      email: decoded.email,
+      admin: decoded.admin || false,
+    })
   }
+  
 
   const logout = () => {
     localStorage.removeItem('token')

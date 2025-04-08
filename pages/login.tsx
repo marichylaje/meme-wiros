@@ -49,28 +49,37 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
+  
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       })
-
+  
       const data = await res.json()
-
+  
       if (!res.ok) {
         toast.error(data.error || 'Error al iniciar sesión')
         return
       }
-
+  
       login(data.token)
+  
+      const decoded = JSON.parse(atob(data.token.split('.')[1])) // 👈 extraer payload
       toast.success('Sesión iniciada')
-      router.push('/')
+  
+      // 🔁 Redirigir según sea admin o no
+      if (decoded.admin) {
+        router.push('/admin')
+      } else {
+        router.push('/')
+      }
     } catch (err) {
       toast.error('Error de red')
     }
   }
+  
 
   return (
     <Wrapper>

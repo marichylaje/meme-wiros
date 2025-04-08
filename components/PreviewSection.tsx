@@ -63,7 +63,7 @@ const FlagText = styled.div<{
   font-size: 18px;
   white-space: nowrap;
   pointer-events: none;
-  z-index: 20;
+  z-index: 10;
   opacity: 0.2;
 `;
 
@@ -127,7 +127,7 @@ const PreviewSection = ({
             <LayerImage
               src={`/wiros/wiro${letter}Invisible.png`}
               alt={`overlay${letter}`}
-              zIndex={999999999}
+              zIndex={10}
             />
           </PreviewBox>
         ))}
