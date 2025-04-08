@@ -13,7 +13,7 @@ const NavContainer = styled.nav`
   background-color: #111827;
   padding: .5rem 2rem;
   color: #f9fafb;
-  z-index: 30;
+  z-index: 1000;
   width: 100%;
   position: fixed;
   left: 0;
@@ -47,29 +47,35 @@ const Menu = styled.div`
 `;
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const router = useRouter();
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
   const isProfilePage = router.pathname === '/profile';
 
-  console.log("NAV BAR")
-
   return (
     <>
       <NavContainer>
         <Nav>
-          <Brand onClick={() => router.push('/')}><img src="/logo.png" alt="Logo" width={160} /></Brand>
+          <Brand onClick={() => router.push('/')}>
+            <img src="/logo.png" alt="Logo" width={160} />
+          </Brand>
           <Menu>
             {isAuthenticated ? (
               <>
+                {user?.admin && (
+                  <Button style={{backgroundColor: 'orange', color: 'black'}} onClick={() => router.push('/admin')}>Pag Admin</Button>
+                )}
                 {!isProfilePage && (
                   <Button onClick={() => router.push('/profile')}>Mi Perfil</Button>
                 )}
                 {isProfilePage && (
                   <Button onClick={() => router.push('/')}>Diseñar bandera</Button>
                 )}
+
+
+
                 <Button onClick={logout}>Salir</Button>
               </>
             ) : (
