@@ -93,9 +93,7 @@ const AdminPage = () => {
   const [selectedUser, setSelectedUser] = useState<any | null>(null)
 
   useEffect(() => {
-    if (!isAuthenticated) return // Esperar a que cargue auth
-
-    if (!user?.admin) {
+    if (!user?.admin || !isAuthenticated) {
       router.push('/') // 🔒 Redirigir si no es admin
     }
   }, [isAuthenticated, user])
