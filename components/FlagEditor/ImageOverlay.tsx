@@ -21,6 +21,25 @@ const Img = styled.img<{ tint: string }>`
   filter: ${(props) => `drop-shadow(0 0 0 ${props.tint}) saturate(1000%)`};
 `;
 
+const ColoredImage = styled.div<{ src: string; color: string }>`
+  width: 100%;
+  height: 100%;
+  background-color: ${(p) => p.color};
+
+  mask-image: url(${(p) => p.src});
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+
+  -webkit-mask-image: url(${(p) => p.src});
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+
+  pointer-events: none;
+`;
+
+
 const Resizer = styled.div`
   width: 6px;
   height: 6px;
@@ -115,8 +134,8 @@ const ImageOverlay = ({
       previewMode={previewMode}
       style={{ border: selected ? '1px dashed black' : 'none' }}
     >
-      <Img src={image.src} tint={image.color} />
-      {selected && <Resizer onMouseDown={() => setIsResizing(true)} />}
+<ColoredImage src={image.src} color={image.color} />
+{selected && <Resizer onMouseDown={() => setIsResizing(true)} />}
     </Wrapper>
   );
 };
