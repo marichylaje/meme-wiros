@@ -12,7 +12,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Meme Page</title>
+        <title>Diseña tu vaso</title>
         <link rel="icon" href="/logo.png" type="image/png" />
       </Head>
 

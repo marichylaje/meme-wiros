@@ -87,7 +87,7 @@ const PreviewSection = ({
             <LayerImage
               src={`/wiros/wiro${letter}Invisible.png`}
               alt={`overlay${letter}`}
-              zIndex={10}
+              zIndex={12}
             />
           </PreviewBox>
         ))}
