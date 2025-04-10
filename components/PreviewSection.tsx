@@ -27,46 +27,6 @@ const LayerImage = styled.img<{ zIndex: number; opacity?: number }>`
   opacity: ${(props) => props.opacity ?? 1};
 `;
 
-const PreviewLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  z-index: ${(props) => props.zIndex};
-  background-color: ${(props) => props.color};
-  opacity: 0.2;
-
-  mask-image: url(${(props) => props.$maskUrl});
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-
-  -webkit-mask-image: url(${(props) => props.$maskUrl});
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-`;
-
-const FlagText = styled.div<{
-  x: number;
-  y: number;
-  color: string;
-  fontFamily: string;
-}>`
-  position: absolute;
-  top: ${(props) => props.y * 100}%;
-  left: ${(props) => props.x * 100}%;
-  transform: translate(-50%, -50%);
-  color: ${(props) => props.color};
-  font-family: ${(props) => props.fontFamily};
-  font-size: 18px;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0.2;
-`;
-
 type PreviewSectionProps = {
   templateName: string;
   layerColors: string[];
@@ -118,9 +78,9 @@ const PreviewSection = ({
               images={images}
               previewMode={true}
               style={{
-                left: key === 0 ? '115px' : key === 1 ? '25px' : '-85px',
-                top: '35px',
-                maxHeight: '230px',
+                left: key === 0 ? '115px' : key === 1 ? '-15px' : '-85px',
+                top: '5px',
+                maxHeight: '290px',
               }}
             />
             {/* 5️⃣ Capa superior invisible (marco wiro) */}

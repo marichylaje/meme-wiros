@@ -34,6 +34,8 @@ const Gallery = ({ onImageSelect }: GalleryProps) => {
   const shieldCount = 20;
   const shields = Array.from({ length: shieldCount }, (_, i) => `/shields/shield${i + 1}.png`);
 
+  console.log({shields})
+
   return (
     <Wrapper>
       {shields.map((src) => (
