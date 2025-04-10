@@ -1,69 +1,63 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 
-//TODO: ELIMINAR DB DESIGN UNUSED TEXT INDIVIDUAL FIELDS
-
-const ImageWrapper = styled.div<{
-  x: number;
-  y: number;
-  size: number;
-  selected: boolean;
-  previewMode: boolean;
-}>`
+const Wrapper = styled.div<{ x: number; y: number; size: number; previewMode: boolean }>`
   position: absolute;
-  top: ${(props) => props.y * 100}%;
-  left: ${(props) => props.x * 100}%;
+  top: ${(p) => p.y * 100}%;
+  left: ${(p) => p.x * 100}%;
   transform: translate(-50%, -50%);
-  width: ${(props) => props.previewMode ? props.size * .6 : props.size}px;
-  height: ${(props) =>  props.previewMode ? props.size * .6 : props.size}px;
+  width: ${(p) => (p.previewMode ? p.size * 0.6 : p.size)}px;
+  height: ${(p) => (p.previewMode ? p.size * 0.6 : p.size)}px;
   cursor: move;
-  z-index: ${(props) => (props.selected ? 11 : 10)};
-  border: ${(props) => (props.selected ? '1px dashed #000' : 'none')};
   user-select: none;
+  z-index: 12;
 `;
 
-const OverlayImage = styled.img`
+const Img = styled.img<{ tint: string }>`
   width: 100%;
   height: 100%;
   object-fit: contain;
   pointer-events: none;
+  filter: ${(props) => `drop-shadow(0 0 0 ${props.tint}) saturate(1000%)`};
 `;
 
 const Resizer = styled.div`
-  width: 12px;
-  height: 12px;
+  width: 6px;
+  height: 6px;
   background: black;
   position: absolute;
   bottom: -6px;
   right: -6px;
   cursor: nwse-resize;
-  z-index: 11;
+  z-index: 13;
 `;
 
 type ImageOverlayProps = {
-  src: string;
-  position: { x: number; y: number };
-  setPosition: (pos: { x: number; y: number }) => void;
-  size: number;
-  setSize: (size: number) => void;
+  image: {
+    id: string;
+    src: string;
+    position: { x: number; y: number };
+    size: number;
+    color: string;
+  };
+  setImage: (img: Partial<typeof image>) => void;
+  onDelete: () => void;
   selected: boolean;
   setSelected: () => void;
   previewMode: boolean;
 };
 
 const ImageOverlay = ({
-  src,
-  position,
-  setPosition,
-  size,
-  setSize,
+  image,
+  setImage,
+  onDelete,
   selected,
   setSelected,
   previewMode,
 }: ImageOverlayProps) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -72,22 +66,20 @@ const ImageOverlay = ({
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    const parent = wrapperRef.current?.parentElement;
-    if (!parent) return;
+    const parent = ref.current?.parentElement;
+    if (!parent || previewMode) return;
+
     const bounds = parent.getBoundingClientRect();
 
     if (isDragging) {
       const newX = (e.clientX - bounds.left) / bounds.width;
       const newY = (e.clientY - bounds.top) / bounds.height;
-      setPosition({
-        x: Math.min(1, Math.max(0, newX)),
-        y: Math.min(1, Math.max(0, newY)),
-      });
+      setImage({ position: { x: Math.min(1, Math.max(0, newX)), y: Math.min(1, Math.max(0, newY)) } });
     }
 
     if (isResizing) {
-      const newSize = size + e.movementX;
-      setSize(Math.max(10, newSize));
+      const newSize = image.size + e.movementX;
+      setImage({ size: Math.max(10, newSize) });
     }
   };
 
@@ -96,22 +88,36 @@ const ImageOverlay = ({
     setIsResizing(false);
   };
 
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (selected && (e.key === 'Delete' || e.key === 'Backspace')) {
+        e.preventDefault();
+        onDelete();
+      }
+    };
+
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [selected]);
+
+  console.log("IMAGE COLOR: ", image.color)
+
   return (
-    <ImageWrapper
-      ref={wrapperRef}
-      x={position.x}
-      y={position.y}
-      size={size}
-      selected={selected}
+    <Wrapper
+      ref={ref}
+      x={image.position.x}
+      y={image.position.y}
+      size={image.size}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       previewMode={previewMode}
+      style={{ border: selected ? '1px dashed black' : 'none' }}
     >
-      <OverlayImage src={src} />
+      <Img src={image.src} tint={image.color} />
       {selected && <Resizer onMouseDown={() => setIsResizing(true)} />}
-    </ImageWrapper>
+    </Wrapper>
   );
 };
 

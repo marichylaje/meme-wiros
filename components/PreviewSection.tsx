@@ -78,9 +78,9 @@ const PreviewSection = ({
               images={images}
               previewMode={true}
               style={{
-                left: key === 0 ? '115px' : key === 1 ? '-15px' : '-85px',
-                top: '5px',
-                maxHeight: '290px',
+                left: key === 0 ? '115px' : key === 1 ? '-15px' : '-160px',
+                top: key === 0 ? '-5px' : '5px',
+                maxHeight: key === 0 ? '310px' : '290px',
               }}
             />
             {/* 5️⃣ Capa superior invisible (marco wiro) */}

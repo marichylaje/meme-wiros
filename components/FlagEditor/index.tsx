@@ -1,4 +1,3 @@
-// ✅ FlagEditor.tsx limpio e integrado con Gallery
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useColor } from '../../context/ColorContext';
@@ -43,7 +42,6 @@ type TextElement = {
   position: { x: number; y: number };
 };
 
-
 type ImageElement = {
   id: string;
   src: string;
@@ -58,17 +56,15 @@ type FlagEditorProps = {
   layerColors: string[];
   setLayerColors: React.Dispatch<React.SetStateAction<string[]>>;
   handleLoadSavedDesign: () => void;
-
   texts: TextElement[];
   setTexts: React.Dispatch<React.SetStateAction<TextElement[]>>;
   images: ImageElement[];
   setImages: React.Dispatch<React.SetStateAction<ImageElement[]>>;
 };
 
-
 const pastelPalette = ['#3B82F6', '#8B5CF6', '#F43F5E', '#FBBF24', '#10B981', '#F87171', '#60A5FA', '#F472B6', '#34D399', '#FB923C'];
 
-const FlagEditor = ({ 
+const FlagEditor = ({
   templateName,
   sides,
   layerColors,
@@ -77,7 +73,7 @@ const FlagEditor = ({
   texts,
   setTexts,
   images,
-  setImages
+  setImages,
 }: FlagEditorProps) => {
   const { color, setColor } = useColor();
   const { isModalOpen } = useModal();
@@ -88,6 +84,7 @@ const FlagEditor = ({
   const [selectedFont, setSelectedFont] = useState('Arial');
   const [isTextModalOpen, setIsTextModalOpen] = useState(false);
   const [lastSelectedTarget, setLastSelectedTarget] = useState<'layer' | 'text' | 'image' | null>(null);
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 
   const skipReset = useRef(false);
 
@@ -108,6 +105,7 @@ const FlagEditor = ({
       setTexts([]);
       setImages([]);
       setSelectedTextId(null);
+      setSelectedImageId(null);
       setRecentColors(recent);
       if (recent.length > 0) setColor(recent[0]);
     };
@@ -135,30 +133,49 @@ const FlagEditor = ({
 
   const applyColor = () => {
     if (lastSelectedTarget === 'text' && selectedTextId) {
-      setTexts((prev) => prev.map((t) => t.id === selectedTextId ? { ...t, color } : t));
+      setTexts((prev) =>
+        prev.map((t) => t.id === selectedTextId ? { ...t, color } : t)
+      );
+      updateRecentColors(color);
+      return;
+    }
+
+    if (lastSelectedTarget === 'image' && selectedImageId) {
+      setImages((prev) =>
+        prev.map((img) => img.id === selectedImageId ? { ...img, color } : img)
+      );
       updateRecentColors(color);
       return;
     }
 
     if (lastSelectedTarget === 'layer' && selectedLayer !== null) {
-      const updatedColors = [...layerColors];
-      updatedColors[selectedLayer] = color;
-      setLayerColors(updatedColors);
+      const updated = [...layerColors];
+      updated[selectedLayer] = color;
+      setLayerColors(updated);
       updateRecentColors(color);
-      return;
     }
   };
 
   const removeColor = () => {
     if (lastSelectedTarget === 'text' && selectedTextId) {
-      setTexts((prev) => prev.map((t) => t.id === selectedTextId ? { ...t, color: 'transparent' } : t));
+      setTexts((prev) =>
+        prev.map((t) => t.id === selectedTextId ? { ...t, color: 'transparent' } : t)
+      );
       return;
     }
 
-    if (selectedLayer === null) return;
-    const updatedColors = [...layerColors];
-    updatedColors[selectedLayer] = 'transparent';
-    setLayerColors(updatedColors);
+    if (lastSelectedTarget === 'image' && selectedImageId) {
+      setImages((prev) =>
+        prev.map((img) => img.id === selectedImageId ? { ...img, color: '#000' } : img)
+      );
+      return;
+    }
+
+    if (selectedLayer !== null) {
+      const updated = [...layerColors];
+      updated[selectedLayer] = 'transparent';
+      setLayerColors(updated);
+    }
   };
 
   const updateRecentColors = (newColor: string) => {
@@ -173,14 +190,13 @@ const FlagEditor = ({
       color,
       fontSize: 24,
       filled: true,
-      strokeWidth: 2, // valor inicial por defecto
+      strokeWidth: 2,
       position: { x: 0.5, y: 0.5 },
     };
     setTexts([...texts, newText]);
     setSelectedTextId(newText.id);
     setLastSelectedTarget('text');
   };
-  
 
   const addNewImage = (src: string) => {
     const newImage: ImageElement = {
@@ -191,6 +207,7 @@ const FlagEditor = ({
       color: '#000',
     };
     setImages((prev) => [...prev, newImage]);
+    setSelectedImageId(newImage.id);
     setLastSelectedTarget('image');
   };
 
@@ -205,7 +222,6 @@ const FlagEditor = ({
   const selectedText = texts.find((t) => t.id === selectedTextId);
   const selectedFilled = selectedText?.filled ?? true;
   const selectedStrokeWidth = selectedText?.strokeWidth ?? 1;
-
 
   return (
     <EditorWrapper>
@@ -252,7 +268,6 @@ const FlagEditor = ({
           }}
         />
 
-
         <CanvasWrapper>
           <CanvasArea
             templateName={templateName}
@@ -265,13 +280,15 @@ const FlagEditor = ({
             setLastSelectedTarget={setLastSelectedTarget}
             images={images}
             setImages={setImages}
+            selectedImageId={selectedImageId}
+            setSelectedImageId={setSelectedImageId}
             previewMode={false}
           />
 
           <LayersControls
             sides={sides}
             selectedLayer={selectedLayer}
-            setSelectedLayer={(i: number) => {
+            setSelectedLayer={(i) => {
               setSelectedLayer(i);
               setLastSelectedTarget('layer');
             }}
@@ -281,6 +298,8 @@ const FlagEditor = ({
               window.dispatchEvent(new Event('load-saved-design'));
               handleLoadSavedDesign();
             }}
+            selectedImageId={selectedImageId}
+            applyColorToImage={applyColor} // usa la misma función
           />
         </CanvasWrapper>
       </Container>
@@ -288,10 +307,12 @@ const FlagEditor = ({
       {isTextModalOpen && (
         <ModalTexto
           onClose={() => setIsTextModalOpen(false)}
-          initialText={selectedTextId ? texts.find((t) => t.id === selectedTextId)?.text || '' : ''}
+          initialText={selectedText?.text || ''}
           onSave={(text) => {
             if (!selectedTextId) return;
-            setTexts((prev) => prev.map((t) => t.id === selectedTextId ? { ...t, text } : t));
+            setTexts((prev) =>
+              prev.map((t) => t.id === selectedTextId ? { ...t, text } : t)
+            );
           }}
         />
       )}

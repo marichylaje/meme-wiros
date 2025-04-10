@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useAuth } from '../../context/AuthContext'
-import { useRouter } from 'next/router'
+import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 
 const ButtonGroup = styled.div`
@@ -12,53 +11,61 @@ const ButtonGroup = styled.div`
   flex-wrap: wrap;
 `;
 
-const LayerButton = styled.button<{ selected: boolean }>`
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  border: 2px solid ${(props) => (props.selected ? '#3b82f6' : '#ccc')};
-  background-color: ${(props) => (props.selected ? '#bfdbfe' : '#f3f4f6')};
-  cursor: pointer;
-  font-weight: 500;
-`;
+type LayersControlsProps = {
+  sides: number;
+  selectedLayer: number | null;
+  setSelectedLayer: (i: number | null) => void;
+  applyColor: () => void;
+  removeColor: () => void;
+  handleLoadSavedDesign: () => void;
+
+  selectedImageId: string | null;
+  applyColorToImage: () => void;
+};
 
 const LayersControls = ({
-    sides,
-    selectedLayer,
-    setSelectedLayer,
-    applyColor,
-    removeColor,
-    handleLoadSavedDesign,
-  }: any) => {
-    const { isAuthenticated } = useAuth()
-const [savedDesign, setSavedDesign] = useState<any>(null)
+  sides,
+  selectedLayer,
+  setSelectedLayer,
+  applyColor,
+  removeColor,
+  handleLoadSavedDesign,
+  selectedImageId,
+  applyColorToImage,
+}: LayersControlsProps) => {
+  const { isAuthenticated } = useAuth();
+  const [savedDesign, setSavedDesign] = useState<any>(null);
 
-useEffect(() => {
-  const fetchSavedDesign = async () => {
-    const token = localStorage.getItem('token')
-    if (!token || !isAuthenticated) return
+  useEffect(() => {
+    const fetchSavedDesign = async () => {
+      const token = localStorage.getItem('token');
+      if (!token || !isAuthenticated) return;
 
-    try {
-      const res = await fetch('/api/design/get', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setSavedDesign(data)
+      try {
+        const res = await fetch('/api/design/get', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setSavedDesign(data);
+        }
+      } catch (err) {
+        console.error('Error al traer diseño guardado', err);
       }
-    } catch (err) {
-      console.error('Error al traer diseño guardado', err)
-    }
-  }
+    };
 
-  fetchSavedDesign()
-}, [isAuthenticated])
+    fetchSavedDesign();
+  }, [isAuthenticated]);
 
-    return (
-      <ButtonGroup>
-        {Array.from({ length: sides }, (_, index) => (
-          <Button
+  const canApplyColor = selectedLayer !== null || !!selectedImageId;
+
+  return (
+    <ButtonGroup>
+      {Array.from({ length: sides }, (_, index) => (
+        <Button
           key={index}
           onClick={() => setSelectedLayer(index)}
           style={{
@@ -68,33 +75,34 @@ useEffect(() => {
         >
           Lado {index + 1}
         </Button>
-        
-        ))}
-        <Button
-          onClick={applyColor}
-          disabled={selectedLayer === null}
-          style={{background: '#10B981'}}
-        >
-          Aplicar Color
-        </Button>
-  
-        <Button
-          onClick={removeColor}
-          disabled={selectedLayer === null}
-          style={{ backgroundColor: '#ef4444' }}
-        >
-          Eliminar Color
-        </Button>
-        {savedDesign && (
-          <Button
-            onClick={handleLoadSavedDesign}
-          >
-            Cargar diseño guardado
-          </Button>
-        )}
+      ))}
 
-      </ButtonGroup>
-    );
-  };
+      <Button
+        onClick={() => {
+          if (selectedLayer !== null) applyColor();
+          else if (selectedImageId) applyColorToImage();
+        }}
+        disabled={!canApplyColor}
+        style={{ background: '#10B981' }}
+      >
+        Aplicar Color
+      </Button>
 
-  export default LayersControls
+      <Button
+        onClick={removeColor}
+        disabled={selectedLayer === null}
+        style={{ backgroundColor: '#ef4444' }}
+      >
+        Eliminar Color
+      </Button>
+
+      {savedDesign && (
+        <Button onClick={handleLoadSavedDesign}>
+          Cargar diseño guardado
+        </Button>
+      )}
+    </ButtonGroup>
+  );
+};
+
+export default LayersControls;

@@ -61,6 +61,8 @@ type CanvasAreaProps = {
   setImages?: React.Dispatch<React.SetStateAction<any[]>>;
   previewMode?: boolean; // 👈
   style?: any;
+  selectedImageId?: string | null;
+  setSelectedImageId?: (id: string | null) => void;
 };
 
 const CanvasArea = ({
@@ -75,11 +77,12 @@ const CanvasArea = ({
   images,
   setImages,
   previewMode = false,
-  style
+  style,
+  selectedImageId,
+  setSelectedImageId
 }: CanvasAreaProps) => {
   const fullimgColor = layerColors[sides];
   const boxRef = useRef<HTMLDivElement>(null);
-  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -209,19 +212,13 @@ const CanvasArea = ({
       {images.map((img) => (
         <ImageOverlay
           key={img.id}
-          src={img.src}
-          position={img.position}
-          setPosition={(pos) =>
+          image={img}
+          setImage={(partial) =>
             setImages((prev) =>
-              prev.map((i) => (i.id === img.id ? { ...i, position: pos } : i))
+              prev.map((i) => (i.id === img.id ? { ...i, ...partial } : i))
             )
           }
-          size={img.size}
-          setSize={(size) =>
-            setImages((prev) =>
-              prev.map((i) => (i.id === img.id ? { ...i, size } : i))
-            )
-          }
+          onDelete={() => setImages((prev) => prev.filter((i) => i.id !== img.id))}
           selected={selectedImageId === img.id}
           setSelected={() => {
             setSelectedImageId(img.id);
