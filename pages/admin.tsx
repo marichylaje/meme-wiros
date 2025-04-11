@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import CanvasArea from '../components/FlagEditor/CanvasArea'
 import domtoimage from 'dom-to-image-more'
 import { useRef } from 'react'
+import ExportCanvas from '../components/FlagEditor/ExportCanvas'
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -93,32 +94,18 @@ const AdminPage = () => {
   const [filtered, setFiltered] = useState<any[]>([])
   const [selectedUser, setSelectedUser] = useState<any | null>(null)
 
-  const canvasRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const handleDownload = () => {
-    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
   
-    domtoimage.toPng(canvasRef.current, {
-      filter: (node) => {
-        // Opcional: filtra nodos si necesitás
-        return true;
-      },
-      bgcolor: 'transparent',
-      style: {
-        transform: 'scale(1)',
-        transformOrigin: 'top left',
-      },
-    })
-    .then((dataUrl: string) => {
-      const link = document.createElement('a')
-      link.download = `bandera_${selectedUser.nombreColegio}.png`
-      link.href = dataUrl
-      link.click()
-    })
-    .catch((error) => {
-      console.error('Error al generar imagen:', error)
-    })
-  }
+    const link = document.createElement('a');
+    link.download = `bandera_${selectedUser.nombreColegio}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+  
 
   useEffect(() => {
     if (!user?.admin || !isAuthenticated) {
@@ -312,18 +299,26 @@ const AdminPage = () => {
               </Button>
             </div>
 
-            <div ref={canvasRef}>
-              <CanvasArea
+            <CanvasArea
                 templateName={selectedUser.design.templateName}
                 sides={JSON.parse(selectedUser.design.layerColors).length - 1}
                 layerColors={JSON.parse(selectedUser.design.layerColors)}
                 texts={(selectedUser.design.texts || '[]')}
                 images={(selectedUser.design.images || '[]')}
                 previewMode={true}
-              />
-            </div>
+            />
+
+            <ExportCanvas
+              ref={canvasRef}
+              templateName={selectedUser.design.templateName}
+              sides={JSON.parse(selectedUser.design.layerColors).length - 1}
+              layerColors={JSON.parse(selectedUser.design.layerColors)}
+              texts={selectedUser.design.texts || []}
+              images={selectedUser.design.images || []}
+            />
           </div>
         )}
+
 
     </Wrapper>
   )
