@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const userId = decoded.id;
-  const { nombreColegio, nombreCurso, cantidad, anioEgreso } = req.body;
+  const { nombreColegio, nombreCurso, cantidad, anioEgreso, telefono } = req.body;
 
   try {
     const updatedUser = await prisma.user.update({
@@ -34,6 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         nombreCurso,
         cantidad: parseInt(cantidad),
         anioEgreso: parseInt(anioEgreso),
+        telefono: telefono,
       },
     });
 

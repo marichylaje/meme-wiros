@@ -27,6 +27,7 @@ const RegisterForm = ({ onClose }: { onClose: () => void }) => {
     password: '',
     cantidad: '',
     anioEgreso: '',
+    telefono: 0
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,6 +63,7 @@ const RegisterForm = ({ onClose }: { onClose: () => void }) => {
       <Input name="password" type="password" placeholder="Contraseña" onChange={handleChange} required />
       <Input name="cantidad" type="number" placeholder="Cantidad de alumnos" onChange={handleChange} required />
       <Input name="anioEgreso" type="number" placeholder="Año de egreso" onChange={handleChange} required />
+      <Input name="telefono" type="number" placeholder="Telefono" onChange={handleChange} required />
       <Button type="submit">Crear cuenta</Button>
     </Form>
   )

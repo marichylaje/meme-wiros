@@ -15,6 +15,7 @@ model User {
   nombreCurso    String
   cantidad       Int
   anioEgreso     Int
+  telefono       String
 
   estado         Estado   @default(POR_HACER) // ✅ Enum para estado
   pagado         Boolean  @default(false)     // ✅ Indica si ya pagó

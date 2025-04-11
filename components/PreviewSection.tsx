@@ -78,7 +78,7 @@ const PreviewSection = ({
               images={images}
               previewMode={true}
               style={{
-                left: key === 0 ? '115px' : key === 1 ? '-15px' : '-160px',
+                left: key === 0 ? '95px' : key === 1 ? '-25px' : '-120px',
                 top: key === 0 ? '-5px' : '5px',
                 maxHeight: key === 0 ? '310px' : '290px',
               }}

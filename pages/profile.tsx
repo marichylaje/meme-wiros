@@ -212,6 +212,16 @@ const ProfilePage = () => {
             />
           </FieldGroup>
 
+          <FieldGroup>
+            <Label>Numero de Telefono</Label>
+            <Input
+              type="number"
+              name="telefono"
+              value={formData.telefono}
+              onChange={handleChange}
+            />
+          </FieldGroup>
+
           <ButtonRow>
               {editing ? (
                   <>

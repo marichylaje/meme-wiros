@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Método no permitido' }) // 👈 este responde 405
   }
 
-  const { nombreColegio, nombreCurso, email, password, cantidad, anioEgreso } = req.body
+  const { nombreColegio, nombreCurso, email, password, cantidad, anioEgreso, telefono } = req.body
 
   try {
     const userExists = await prisma.user.findUnique({ where: { email } })
@@ -29,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         password: hashedPassword,
         cantidad: parseInt(cantidad),
         anioEgreso: parseInt(anioEgreso),
+        telefono: telefono
       },
     })
 

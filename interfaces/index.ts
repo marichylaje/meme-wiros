@@ -12,6 +12,7 @@ export interface User {
   email: string;
   contraseña: string;
   templateId: string;
+  telefono: number;
   color: {
     color1: string;
     color2: string;

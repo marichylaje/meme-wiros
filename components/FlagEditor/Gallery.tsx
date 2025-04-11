@@ -32,7 +32,7 @@ type GalleryProps = {
 
 const Gallery = ({ onImageSelect }: GalleryProps) => {
   const shieldCount = 10;
-  const shields = Array.from({ length: shieldCount }, (_, i) => `/shields/shield${i + 1}.png`);
+  const shields = Array.from({ length: 10 }, (_, i) => `/shields/shield${i + 1}.png`);
 
   console.log({shields})
 

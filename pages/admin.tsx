@@ -1,11 +1,12 @@
 // pages/admin.tsx
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import PreviewSection from '../components/PreviewSection'
 import Navbar from '../components/Navbar'
 import { useRouter } from 'next/router'
 import { useAuth } from '../context/AuthContext'
 import CanvasArea from '../components/FlagEditor/CanvasArea'
+import domtoimage from 'dom-to-image-more'
+import { useRef } from 'react'
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -92,6 +93,33 @@ const AdminPage = () => {
   const [filtered, setFiltered] = useState<any[]>([])
   const [selectedUser, setSelectedUser] = useState<any | null>(null)
 
+  const canvasRef = useRef<HTMLDivElement>(null)
+
+  const handleDownload = () => {
+    if (!canvasRef.current) return;
+  
+    domtoimage.toPng(canvasRef.current, {
+      filter: (node) => {
+        // Opcional: filtra nodos si necesitás
+        return true;
+      },
+      bgcolor: 'transparent',
+      style: {
+        transform: 'scale(1)',
+        transformOrigin: 'top left',
+      },
+    })
+    .then((dataUrl: string) => {
+      const link = document.createElement('a')
+      link.download = `bandera_${selectedUser.nombreColegio}.png`
+      link.href = dataUrl
+      link.click()
+    })
+    .catch((error) => {
+      console.error('Error al generar imagen:', error)
+    })
+  }
+
   useEffect(() => {
     if (!user?.admin || !isAuthenticated) {
       router.push('/') // 🔒 Redirigir si no es admin
@@ -158,6 +186,10 @@ const AdminPage = () => {
                 <InfoBox>
                     <Label>Cantidad de alumnos</Label>
                     <Value>{selectedUser.cantidad}</Value>
+                </InfoBox>
+                <InfoBox>
+                    <Label>Numero de Telefono</Label>
+                    <Value>{selectedUser.telefono}</Value>
                 </InfoBox>
                 <InfoBox>
                     <Label>Año de egreso</Label>
@@ -270,19 +302,28 @@ const AdminPage = () => {
                 </InfoGrid>
             </>
         )}
-    {selectedUser?.design && (
-        <div style={{ marginTop: '3rem' }}>
+        {selectedUser?.design && (
+          <div style={{ marginTop: '3rem' }}>
             <h2>Vista del diseño</h2>
-            <CanvasArea
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Button onClick={handleDownload} style={{ backgroundColor: '#10B981' }}>
+                Descargar PNG
+              </Button>
+            </div>
+
+            <div ref={canvasRef}>
+              <CanvasArea
                 templateName={selectedUser.design.templateName}
                 sides={JSON.parse(selectedUser.design.layerColors).length - 1}
                 layerColors={JSON.parse(selectedUser.design.layerColors)}
                 texts={(selectedUser.design.texts || '[]')}
                 images={(selectedUser.design.images || '[]')}
                 previewMode={true}
-            />
-        </div>
-    )}
+              />
+            </div>
+          </div>
+        )}
 
     </Wrapper>
   )

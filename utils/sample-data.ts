@@ -8,6 +8,7 @@ export const sampleUserData: User[] = [
     email: "alice@sanmartin.edu",
     contraseña: "hashed_password_1",
     templateId: "template10",
+    telefono: 32135435,
     color: {
       color1: "#FDE68A",
       color2: "#FBCFE8",
@@ -21,6 +22,7 @@ export const sampleUserData: User[] = [
     email: "bob@belgrano.edu",
     contraseña: "hashed_password_2",
     templateId: "template5",
+    telefono: 32135435,
     color: {
       color1: "#A5F3FC",
       color2: "#FCA5A5",
@@ -34,6 +36,7 @@ export const sampleUserData: User[] = [
     email: "caroline@escuela4.edu",
     contraseña: "hashed_password_3",
     templateId: "template2",
+    telefono: 32135435,
     color: {
       color1: "#BBF7D0",
       color2: "#FCD34D",
