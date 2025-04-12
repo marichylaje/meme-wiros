@@ -19,7 +19,7 @@ const Overlay = styled.div<{
   transform: translate(-50%, -50%);
   color: ${(props) => props.color};
   font-family: ${(props) => props.fontFamily};
-  font-size: ${(props) => props.previewMode ? props.fontSize * 0.6 :  props.fontSize}px;
+  font-size: ${(props) =>  props.previewMode ? props.fontSize * 0.8 : props.fontSize}px;
   font-weight: ${(props) => (props.filled ? 'bold' : 'normal')};
   -webkit-text-stroke: ${(props) =>
     props.filled ? '0px' : `${props.strokeWidth}px #000`};

@@ -30,7 +30,6 @@ const MaskedLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
-  opacity: ${({ previewMode }) => (previewMode ? 0.6: 1)};
 `;
 
 type CanvasAreaProps = {
@@ -63,6 +62,7 @@ type CanvasAreaProps = {
   style?: any;
   selectedImageId?: string | null;
   setSelectedImageId?: (id: string | null) => void;
+  className?: string;
 };
 
 const CanvasArea = ({
@@ -79,7 +79,8 @@ const CanvasArea = ({
   previewMode = false,
   style,
   selectedImageId,
-  setSelectedImageId
+  setSelectedImageId,
+  className
 }: CanvasAreaProps) => {
   const fullimgColor = layerColors[sides];
   const boxRef = useRef<HTMLDivElement>(null);
@@ -145,6 +146,7 @@ const CanvasArea = ({
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
       style={{...style}}
+      className={className}
     >
       {Array.from({ length: sides }, (_, index) => {
         const layerColor = layerColors[index];
@@ -226,6 +228,7 @@ const CanvasArea = ({
             setSelectedTextId(null);
           }}
           previewMode={previewMode}
+          className="imgWrapper"
         />
       ))}
     </AspectRatioBox>

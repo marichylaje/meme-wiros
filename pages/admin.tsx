@@ -85,7 +85,6 @@ const SectionTitle = styled.h3`
   padding-bottom: 0.5rem;
 `
 
-
 const AdminPage = () => {
     const { user, isAuthenticated } = useAuth()
     const router = useRouter()
@@ -290,11 +289,11 @@ const AdminPage = () => {
             </>
         )}
         {selectedUser?.design && (
-          <div style={{ marginTop: '3rem' }}>
+          <div style={{ marginTop: '3rem', width: '100%', placeItems: 'center' }}>
             <h2>Vista del diseño</h2>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Button onClick={handleDownload} style={{ backgroundColor: '#10B981' }}>
+              <Button onClick={handleDownload} style={{ backgroundColor: '#10B981', width: '581px', padding: '1rem 0', marginBottom: '1rem', fontSize: '1.3rem' }}>
                 Descargar PNG
               </Button>
             </div>

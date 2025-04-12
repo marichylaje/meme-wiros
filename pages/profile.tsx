@@ -32,12 +32,13 @@ const Label = styled.label`
   color: white;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ $editing?: boolean }>`
   padding: 0.75rem;
   width: 100%;
   border-radius: 8px;
   border: 1px solid #ccc;
-  color: white;
+  color: ${(props) => (props.$editing ? 'black' : 'white')};
+  background-color: ${(props) => (props.$editing ? 'white' : 'transparent')};
 `;
 
 const ButtonRow = styled.div`
@@ -129,6 +130,11 @@ const ProfilePage = () => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
+    if (!formData.nombreColegio || !formData.telefono) {
+      toast.error('Completá todos los campos requeridos');
+      return;
+    }
+
     const res = await fetch('/api/user/update', {
       method: 'PUT',
       headers: {
@@ -177,6 +183,7 @@ const ProfilePage = () => {
               value={formData.nombreColegio}
               onChange={handleChange}
               disabled={!editing}
+              $editing={editing}
             />
           </FieldGroup>
 
@@ -187,6 +194,7 @@ const ProfilePage = () => {
               value={formData.nombreCurso}
               onChange={handleChange}
               disabled={!editing}
+              $editing={editing}
             />
           </FieldGroup>
 
@@ -198,6 +206,7 @@ const ProfilePage = () => {
               value={formData.cantidad}
               onChange={handleChange}
               disabled={!editing}
+              $editing={editing}
             />
           </FieldGroup>
 
@@ -209,6 +218,7 @@ const ProfilePage = () => {
               value={formData.anioEgreso}
               onChange={handleChange}
               disabled={!editing}
+              $editing={editing}
             />
           </FieldGroup>
 
@@ -219,6 +229,8 @@ const ProfilePage = () => {
               name="telefono"
               value={formData.telefono}
               onChange={handleChange}
+              disabled={!editing}
+              $editing={editing}
             />
           </FieldGroup>
 
@@ -244,8 +256,8 @@ const ProfilePage = () => {
                   </>
               ) : (
                   <>
-                      <Button onClick={() => setEditing(true)}>Modificar</Button>
-                      <Button data-variant="delete" onClick={handleDeleteAccount} style={{ backgroundColor: '#ef4444' }}>
+                  <Button type="button" onClick={() => setEditing(true)}>Modificar</Button>
+                  <Button type="button" data-variant="delete" onClick={handleDeleteAccount} style={{ backgroundColor: '#ef4444' }}>
                       Eliminar cuenta
                       </Button>
                   </>

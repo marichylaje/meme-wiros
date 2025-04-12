@@ -27,6 +27,16 @@ const LayerImage = styled.img<{ zIndex: number; opacity?: number }>`
   opacity: ${(props) => props.opacity ?? 1};
 `;
 
+const StyledCanvasArea = styled(CanvasArea)`
+  > div {
+    opacity: 0.9;
+  }
+  > div:not(.imgWrapper) {
+    opacity: 0.7;
+  }
+`;
+
+
 type PreviewSectionProps = {
   templateName: string;
   layerColors: string[];
@@ -70,7 +80,7 @@ const PreviewSection = ({
               zIndex={1}
               style={{ left: key === 0 ? '40px' : '84px' }}
             />
-            <CanvasArea
+            <StyledCanvasArea
               templateName={templateName}
               sides={layerColors.length - 1}
               layerColors={layerColors}

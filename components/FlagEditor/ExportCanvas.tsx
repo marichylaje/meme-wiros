@@ -28,9 +28,10 @@ import React, {
     }[];
   };
   
-  const WIDTH = 2700;
+  const WIDTH = 3300;
   const HEIGHT = 1900;
-  
+  const scaleFactor = WIDTH / 580;
+
   const ExportCanvas = forwardRef<HTMLCanvasElement, ExportCanvasProps>(
     ({ templateName, sides, layerColors, texts, images }, ref) => {
       const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -66,11 +67,12 @@ import React, {
           // Render imágenes coloreadas
           for (const img of images) {
             const size = img.size * assetsResize;
+            const isHigherShield = img.src === "/shields/shield1.png"
             await drawMaskedImage(ctx, img.src, img.color, {
               x: img.position.x * WIDTH - size / 2,
-              y: img.position.y * HEIGHT - size / 2 + size / 15,
+              y: img.position.y * HEIGHT - size / 2 + size / (isHigherShield ? 15 : 9999),
               width: size,
-              height: size - (size / 8)
+              height: size - (size / (isHigherShield ? 4 : 9999))
             });
           }
   
@@ -78,20 +80,22 @@ import React, {
           for (const t of texts) {
             const x = t.position.x * WIDTH;
             const y = t.position.y * HEIGHT;
-            const fontSize = t.fontSize * assetsResize;
-  
+            const fontSize = t.fontSize * (assetsResize + .75);
+          
             ctx.save();
             ctx.font = `${t.filled ? 'bold' : ''} ${fontSize}px ${t.fontFamily}`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = t.color;
-            ctx.lineWidth = t.strokeWidth;
-  
+          
+            // Escalar el borde proporcional al canvas HD
+            ctx.lineWidth = t.strokeWidth * scaleFactor;
+          
             if (!t.filled && t.strokeWidth > 0) {
               ctx.strokeStyle = 'black';
               ctx.strokeText(t.text, x, y);
             }
-  
+          
             ctx.fillText(t.text, x, y);
             ctx.restore();
           }

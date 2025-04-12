@@ -6,8 +6,8 @@ const Wrapper = styled.div<{ x: number; y: number; size: number; previewMode: bo
   top: ${(p) => p.y * 100}%;
   left: ${(p) => p.x * 100}%;
   transform: translate(-50%, -50%);
-  width: ${(p) => (p.previewMode ? p.size * 0.6 : p.size)}px;
-  height: ${(p) => (p.previewMode ? p.size * 0.6 : p.size)}px;
+  width: ${(p) => (p.previewMode ? p.size * 0.8 : p.size)}px;
+  height: ${(p) => (p.previewMode ? p.size * 0.8 : p.size)}px;
   cursor: move;
   user-select: none;
   z-index: 12;
@@ -64,6 +64,7 @@ type ImageOverlayProps = {
   selected: boolean;
   setSelected: () => void;
   previewMode: boolean;
+  className: string;
 };
 
 const ImageOverlay = ({
@@ -73,6 +74,7 @@ const ImageOverlay = ({
   selected,
   setSelected,
   previewMode,
+  className
 }: ImageOverlayProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -133,6 +135,7 @@ const ImageOverlay = ({
       onMouseLeave={handleMouseUp}
       previewMode={previewMode}
       style={{ border: selected ? '1px dashed black' : 'none' }}
+      className={className}
     >
 <ColoredImage src={image.src} color={image.color} />
 {selected && <Resizer onMouseDown={() => setIsResizing(true)} />}
