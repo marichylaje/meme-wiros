@@ -164,7 +164,6 @@ const ProfilePage = () => {
         {design && (
           <PreviewSection
             templateName={design.templateName}
-            layerColors={JSON.parse(design.layerColors)}
             texts={design.texts || []}
             images={design.images || []}
           />
