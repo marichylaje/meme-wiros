@@ -13,6 +13,10 @@ const Wrapper = styled.div`
   border-bottom: 2px solid #334155;
   width: 100%;
   border: 3px solid black;
+
+  & > *:nth-last-child(-n + 10) {
+    display: none;
+  }
 `;
 
 const ShieldImage = styled.img`
@@ -31,10 +35,7 @@ type GalleryProps = {
 };
 
 const Gallery = ({ onImageSelect }: GalleryProps) => {
-  const shieldCount = 10;
   const shields = Array.from({ length: 10 }, (_, i) => `/shields/shield${i + 1}.png`);
-
-  console.log({shields})
 
   return (
     <Wrapper>
