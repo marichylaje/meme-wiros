@@ -8,6 +8,10 @@ const PreviewContainer = styled.div`
   justify-content: center;
   gap: 2rem;
   margin-top: 2rem;
+
+  > :last-child {
+    padding-right: 1rem;
+  }
 `;
 
 const PreviewBox = styled.div`
@@ -67,7 +71,7 @@ const PreviewSection = ({
   const defaultColors = templateDefaultColors[templateName] || [];
 
   return (
-    <div style={{ marginBottom: '3rem' }}>
+    <div style={{ marginBottom: '3rem', marginRight: '2rem' }}>
       <h2 style={{ textAlign: 'center', color: 'white' }}>Vista previa</h2>
       <PreviewContainer>
         {previews.map((letter, key) => (
@@ -87,8 +91,8 @@ const PreviewSection = ({
               previewMode={true}
               style={{
                 left: key === 0 ? '95px' : key === 1 ? '-25px' : '-120px',
-                top: key === 0 ? '-5px' : '5px',
-                maxHeight: key === 0 ? '310px' : '290px',
+                top: key === 0 ? '-15px' : '-15px',
+                maxHeight: key === 0 ? '320px' : '310px',
               }}
             />
             <LayerImage
