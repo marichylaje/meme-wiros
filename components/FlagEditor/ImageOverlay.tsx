@@ -59,7 +59,7 @@ type ImageOverlayProps = {
     size: number;
     color: string;
   };
-  setImage: (img: Partial<typeof image>) => void;
+  setImage: (img) => void;
   onDelete: () => void;
   selected: boolean;
   setSelected: () => void;
