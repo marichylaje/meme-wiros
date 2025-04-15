@@ -2,19 +2,24 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import TextOverlay from './TextOverlay';
 import ImageOverlay from './ImageOverlay';
+import { templateDefaultColors } from '../../lib/templateColors';
 
 const AspectRatioBox = styled.div`
   border-radius: 1rem;
   position: relative;
-  height: 452px; // ✨ tamaño fijo
+  height: 452px;
   aspect-ratio: 2700 / 2100;
   background-color: #eee;
   overflow: hidden;
   border: 2px solid #ccc;
 `;
 
-
-const MaskedLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string, previewMode: boolean }>`
+const MaskedLayer = styled.div<{
+  zIndex: number;
+  color: string;
+  $maskUrl: string;
+  previewMode: boolean;
+}>`
   position: absolute;
   top: 0;
   left: 0;
@@ -35,7 +40,6 @@ const MaskedLayer = styled.div<{ zIndex: number; color: string; $maskUrl: string
 type CanvasAreaProps = {
   templateName: string;
   sides: number;
-  layerColors: string[];
   texts: {
     id: string;
     text: string;
@@ -58,17 +62,17 @@ type CanvasAreaProps = {
     color: string;
   }[];
   setImages?: React.Dispatch<React.SetStateAction<any[]>>;
-  previewMode?: boolean; // 👈
+  previewMode?: boolean;
   style?: any;
   selectedImageId?: string | null;
   setSelectedImageId?: (id: string | null) => void;
   className?: string;
+  layerColors: string[]; // NEW: override colors
 };
 
 const CanvasArea = ({
   templateName,
   sides,
-  layerColors,
   texts,
   setTexts,
   selectedTextId,
@@ -80,9 +84,11 @@ const CanvasArea = ({
   style,
   selectedImageId,
   setSelectedImageId,
-  className
+  className,
+  layerColors
 }: CanvasAreaProps) => {
-  const fullimgColor = layerColors[sides];
+  const defaultColors = templateDefaultColors[templateName] || [];
+  const effectiveColors = layerColors.length ? layerColors : defaultColors;
   const boxRef = useRef<HTMLDivElement>(null);
 
   const handleDrop = (e: React.DragEvent) => {
@@ -123,8 +129,6 @@ const CanvasArea = ({
   }, [selectedImageId]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Si se hace click en el fondo (no en un hijo)
-    console.log("CANVAS CLICKK")
     if (e.target === boxRef.current) {
       setSelectedTextId(null);
       setSelectedImageId(null);
@@ -133,10 +137,9 @@ const CanvasArea = ({
   };
 
   const handleTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Si se hace click en el fondo (no en un hijo)
     setTimeout(() => {
-      console.log("TEXT CLICKK")
-    }, 100)
+      console.log('TEXT CLICKK');
+    }, 100);
   };
 
   return (
@@ -145,11 +148,11 @@ const CanvasArea = ({
       onClick={handleCanvasClick}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
-      style={{...style}}
+      style={{ ...style }}
       className={className}
     >
       {Array.from({ length: sides }, (_, index) => {
-        const layerColor = layerColors[index];
+        const layerColor = effectiveColors[index];
         if (!layerColor || layerColor.trim() === '' || layerColor === 'transparent') return null;
         return (
           <MaskedLayer
@@ -161,15 +164,6 @@ const CanvasArea = ({
           />
         );
       })}
-
-      {fullimgColor && fullimgColor.trim() !== '' && (
-        <MaskedLayer
-          zIndex={sides + 1}
-          color={fullimgColor}
-          $maskUrl={`/templates/${templateName}/fullimg.png`}
-          previewMode={previewMode}
-          />
-      )}
 
       {texts.map((textObj) => (
         <TextOverlay
@@ -198,9 +192,7 @@ const CanvasArea = ({
             setSelectedImageId(null);
           }}
           onClick={handleTextClick}
-          onDelete={() =>
-            setTexts((prev) => prev.filter((t) => t.id !== textObj.id))
-          }
+          onDelete={() => setTexts((prev) => prev.filter((t) => t.id !== textObj.id))}
           selected={selectedTextId === textObj.id}
           onTextChange={(newText) =>
             setTexts((prev) =>

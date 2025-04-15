@@ -1,6 +1,7 @@
+// src/components/PreviewSection.tsx
 import styled from 'styled-components';
 import CanvasArea from './FlagEditor/CanvasArea';
-import { maxHeaderSize } from 'http';
+import { templateDefaultColors } from '../lib/templateColors';
 
 const PreviewContainer = styled.div`
   display: flex;
@@ -36,10 +37,8 @@ const StyledCanvasArea = styled(CanvasArea)`
   }
 `;
 
-
 type PreviewSectionProps = {
   templateName: string;
-  layerColors: string[];
   texts: {
     id: string;
     text: string;
@@ -61,11 +60,11 @@ type PreviewSectionProps = {
 
 const PreviewSection = ({
   templateName,
-  layerColors,
   texts,
   images,
 }: PreviewSectionProps) => {
   const previews = ['A', 'B', 'C'];
+  const defaultColors = templateDefaultColors[templateName] || [];
 
   return (
     <div style={{ marginBottom: '3rem' }}>
@@ -73,7 +72,6 @@ const PreviewSection = ({
       <PreviewContainer>
         {previews.map((letter, key) => (
           <PreviewBox key={letter}>
-            {/* 1️⃣ Fondo visible del wiro */}
             <LayerImage
               src={`/wiros/wiro${letter}Visible.png`}
               alt={`wiro${letter}`}
@@ -82,8 +80,8 @@ const PreviewSection = ({
             />
             <StyledCanvasArea
               templateName={templateName}
-              sides={layerColors.length - 1}
-              layerColors={layerColors}
+              sides={defaultColors.length}
+              layerColors={defaultColors}
               texts={texts}
               images={images}
               previewMode={true}
@@ -93,7 +91,6 @@ const PreviewSection = ({
                 maxHeight: key === 0 ? '310px' : '290px',
               }}
             />
-            {/* 5️⃣ Capa superior invisible (marco wiro) */}
             <LayerImage
               src={`/wiros/wiro${letter}Invisible.png`}
               alt={`overlay${letter}`}

@@ -7,6 +7,7 @@ import LayersControls from './LayersControls';
 import ModalTexto from './ModalTexto';
 import Gallery from './Gallery';
 import { useModal } from '../../context/ModalContext';
+import { templateDefaultColors } from '../../lib/templateColors';
 
 const EditorWrapper = styled.div`
   display: flex;
@@ -93,25 +94,38 @@ const FlagEditor = ({
       skipReset.current = false;
       return;
     }
-
-    const reset = () => {
-      const shuffled = pastelPalette.sort(() => 0.5 - Math.random());
-      const recent = shuffled.slice(0, 5);
-      const fullPalette = [...recent];
-      const generated = Array.from({ length: sides + 1 }, (_, i) => fullPalette[i % fullPalette.length]);
-      setLayerColors(generated);
+  
+    // si ya tenemos colores por template, los usamos
+    const defaultFromTemplate = templateDefaultColors[templateName];
+    if (defaultFromTemplate && defaultFromTemplate.length) {
+      setLayerColors(defaultFromTemplate);
       setSelectedLayer(0);
       setLastSelectedTarget('layer');
       setTexts([]);
       setImages([]);
       setSelectedTextId(null);
       setSelectedImageId(null);
-      setRecentColors(recent);
-      if (recent.length > 0) setColor(recent[0]);
-    };
-
-    reset();
+      setRecentColors(defaultFromTemplate.slice(0, 5));
+      setColor(defaultFromTemplate[0]);
+      return;
+    }
+  
+    // si no hay template con colores, generamos aleatorios
+    const shuffled = pastelPalette.sort(() => 0.5 - Math.random());
+    const recent = shuffled.slice(0, 5);
+    const fullPalette = [...recent];
+    const generated = Array.from({ length: sides + 1 }, (_, i) => fullPalette[i % fullPalette.length]);
+    setLayerColors(generated);
+    setSelectedLayer(0);
+    setLastSelectedTarget('layer');
+    setTexts([]);
+    setImages([]);
+    setSelectedTextId(null);
+    setSelectedImageId(null);
+    setRecentColors(recent);
+    if (recent.length > 0) setColor(recent[0]);
   }, [templateName, sides]);
+  
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -299,7 +313,8 @@ const FlagEditor = ({
               handleLoadSavedDesign();
             }}
             selectedImageId={selectedImageId}
-            applyColorToImage={applyColor} // usa la misma función
+            applyColorToImage={applyColor} 
+            layerColors={layerColors} 
           />
         </CanvasWrapper>
       </Container>

@@ -18,7 +18,7 @@ type LayersControlsProps = {
   applyColor: () => void;
   removeColor: () => void;
   handleLoadSavedDesign: () => void;
-
+  layerColors: string[]; // 👈 nuevo
   selectedImageId: string | null;
   applyColorToImage: () => void;
 };
@@ -32,6 +32,7 @@ const LayersControls = ({
   handleLoadSavedDesign,
   selectedImageId,
   applyColorToImage,
+  layerColors,
 }: LayersControlsProps) => {
   const { isAuthenticated } = useAuth();
   const [savedDesign, setSavedDesign] = useState<any>(null);
@@ -64,18 +65,24 @@ const LayersControls = ({
 
   return (
     <ButtonGroup>
-      {Array.from({ length: sides }, (_, index) => (
-        <Button
-          key={index}
-          onClick={() => setSelectedLayer(index)}
-          style={{
-            border: `2px solid ${selectedLayer === index ? '#3b82f6' : '#ccc'}`,
-            backgroundColor: selectedLayer === index ? '#1f2937' : '#3b82f6',
-          }}
-        >
-          Lado {index + 1}
-        </Button>
-      ))}
+      {Array.from({ length: sides }, (_, index) => {
+        const color = layerColors[index] || '#3b82f6'; // fallback azul
+
+        return (
+          <Button
+            key={index}
+            onClick={() => setSelectedLayer(index)}
+            style={{
+              border: `2px solid ${selectedLayer === index ? '#3b82f6' : '#ccc'}`,
+              backgroundColor: color,
+              color: '#fff',
+              textShadow: '2px 2px 1px #000', // 👈 bordecito negro
+            }}
+          >
+            Lado {index + 1}
+          </Button>
+        );
+      })}
 
       <Button
         onClick={() => {

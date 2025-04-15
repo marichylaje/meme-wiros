@@ -13,10 +13,6 @@ const Wrapper = styled.div`
   border-bottom: 2px solid #334155;
   width: 100%;
   border: 3px solid black;
-
-  & > *:nth-last-child(-n + 10) {
-    display: none;
-  }
 `;
 
 const ShieldImage = styled.img`
