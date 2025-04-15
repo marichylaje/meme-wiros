@@ -166,6 +166,7 @@ const ProfilePage = () => {
             templateName={design.templateName}
             texts={design.texts || []}
             images={design.images || []}
+            layerColors={design.layerColors} 
           />
         )}
 

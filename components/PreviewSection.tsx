@@ -43,6 +43,7 @@ const StyledCanvasArea = styled(CanvasArea)`
 
 type PreviewSectionProps = {
   templateName: string;
+  layerColors: string[]; // 👈 agregar
   texts: {
     id: string;
     text: string;
@@ -66,9 +67,9 @@ const PreviewSection = ({
   templateName,
   texts,
   images,
+  layerColors
 }: PreviewSectionProps) => {
   const previews = ['A', 'B', 'C'];
-  const defaultColors = templateDefaultColors[templateName] || [];
 
   return (
     <div style={{ marginBottom: '3rem', marginRight: '2rem' }}>
@@ -84,8 +85,8 @@ const PreviewSection = ({
             />
             <StyledCanvasArea
               templateName={templateName}
-              sides={defaultColors.length}
-              layerColors={defaultColors}
+              sides={layerColors.length}
+              layerColors={layerColors}
               texts={texts}
               images={images}
               previewMode={true}

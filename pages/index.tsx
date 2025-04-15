@@ -295,6 +295,7 @@ const HomePage = () => {
               templateName={currentTemplateName}
               texts={texts}
               images={images}
+              layerColors={layerColors} // 👈 nuevo prop
             />
           </Content>
 
