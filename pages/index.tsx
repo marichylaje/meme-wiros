@@ -293,7 +293,6 @@ const HomePage = () => {
 
             <PreviewSection
               templateName={currentTemplateName}
-              layerColors={layerColors}
               texts={texts}
               images={images}
             />
