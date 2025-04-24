@@ -31,7 +31,8 @@ type GalleryProps = {
 };
 
 const Gallery = ({ onImageSelect }: GalleryProps) => {
-  const shields = Array.from({ length: 10 }, (_, i) => `/shields/shield${i + 1}.png`);
+  const numeroMaximoDeShields = 10;
+  const shields = Array.from({ length: numeroMaximoDeShields }, (_, i) => `/shields/shield${i + 1}.png`);
 
   return (
     <Wrapper>
