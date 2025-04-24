@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useModal } from '../../context/ModalContext';
 
-const Wrapper = styled.div<{ x: number; y: number; size: number; previewMode: boolean; hasSelectedText: boolean; }>`
+const Wrapper = styled.div<{
+  x: number;
+  y: number;
+  size: number;
+  previewMode: boolean;
+  hasSelectedText: boolean;
+}>`
   position: absolute;
   top: ${(p) => p.y * 100}%;
   left: ${(p) => p.x * 100}%;
@@ -39,7 +45,6 @@ const ColoredImage = styled.div<{ src: string; color: string }>`
 
   pointer-events: none;
 `;
-
 
 const Resizer = styled.div`
   width: 6px;
@@ -86,36 +91,13 @@ const ImageOverlay = ({
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsDragging(true);
+    if (!isResizing) setIsDragging(true);
     setSelected();
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const parent = ref.current?.parentElement;
-    if (!parent || previewMode) return;
-
-    const bounds = parent.getBoundingClientRect();
-
-    if (isDragging) {
-      const newX = (e.clientX - bounds.left) / bounds.width;
-      const newY = (e.clientY - bounds.top) / bounds.height;
-      setImage({ position: { x: Math.min(1, Math.max(0, newX)), y: Math.min(1, Math.max(0, newY)) } });
-    }
-
-    if (isResizing) {
-      const newSize = image.size + e.movementX;
-      setImage({ size: Math.max(10, newSize) });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    setIsResizing(false);
   };
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if(isModalOpen) return;
+      if (isModalOpen) return;
       if (selected && (e.key === 'Delete' || e.key === 'Backspace')) {
         e.preventDefault();
         onDelete();
@@ -126,23 +108,59 @@ const ImageOverlay = ({
     return () => window.removeEventListener('keydown', handleKey);
   }, [selected, isModalOpen]);
 
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      const parent = ref.current?.parentElement;
+      if (!parent || previewMode) return;
+
+      const bounds = parent.getBoundingClientRect();
+
+      if (isDragging && !isResizing) {
+        const newX = (e.clientX - bounds.left) / bounds.width;
+        const newY = (e.clientY - bounds.top) / bounds.height;
+        setImage({ position: { x: Math.min(1, Math.max(0, newX)), y: Math.min(1, Math.max(0, newY)) } });
+      }
+
+      if (isResizing) {
+        const newSize = image.size + e.movementX;
+        setImage({ size: Math.max(10, newSize) });
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isDragging, isResizing, image.size, previewMode]);
+
   return (
     <Wrapper
       ref={ref}
       x={image.position.x}
       y={image.position.y}
       size={image.size}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
       previewMode={previewMode}
       style={{ border: selected ? '1px dashed black' : 'none' }}
       className={className}
       hasSelectedText={hasSelectedText}
+      onMouseDown={handleMouseDown}
     >
-<ColoredImage src={image.src} color={image.color} />
-{selected && <Resizer onMouseDown={() => setIsResizing(true)} />}
+      <ColoredImage src={image.src} color={image.color} />
+      {selected && (
+        <Resizer
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            setIsResizing(true);
+          }}
+        />
+      )}
     </Wrapper>
   );
 };
