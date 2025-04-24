@@ -40,15 +40,24 @@ const TemplatesList = ({ templates, currentTemplate, onTemplateChange }: Templat
   return (
     <>
       <h2 style={{ marginBottom: '1rem', color: '#f9fafb' }}>Templates</h2>
-      {templates.map((template) => (
-        <TemplateButton
-          key={template.name}
-          active={currentTemplate === template.name}
-          onClick={() => onTemplateChange(template.name)}
-        >
-          <img src={template.preview} alt={template.name} />
-          <span>{template.name}</span>
-        </TemplateButton>
+      {[...templates]
+        .sort((a, b) => {
+          const getNumber = (str: string) => {
+            const match = str.match(/\d+/); // busca el primer número
+            return match ? parseInt(match[0], 10) : Infinity; // sin número = va al final
+          };
+
+          return getNumber(a.name) - getNumber(b.name);
+        })
+        .map((template) => (
+          <TemplateButton
+            key={template.name}
+            active={currentTemplate === template.name}
+            onClick={() => onTemplateChange(template.name)}
+          >
+            <img src={template.preview} alt={template.name} />
+            <span>{template.name}</span>
+          </TemplateButton>
       ))}
     </>
   );
