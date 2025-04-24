@@ -30,7 +30,6 @@ const TemplateButton = styled.button<{ active: boolean }>`
   }
 `;
 
-
 type TemplatesListProps = {
   templates: { name: string; preview: string }[];
   currentTemplate: string;

@@ -7,7 +7,10 @@ const PreviewContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 2rem;
+  max-width: 900px;
   margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
 
   > :last-child {
     padding-right: 1rem;
@@ -70,7 +73,9 @@ const PreviewSection = ({
   layerColors
 }: PreviewSectionProps) => {
   const previews = ['A', 'B', 'C'];
-
+  console.log({texts})
+  console.log({images})
+  console.log({layerColors})
   return (
     <div style={{ marginBottom: '3rem', marginRight: '2rem' }}>
       <h2 style={{ textAlign: 'center', color: 'white' }}>Vista previa</h2>

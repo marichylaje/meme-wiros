@@ -111,11 +111,6 @@ const HomePage = () => {
   const [texts, setTexts] = useState<TextElement[]>([])
   const [images, setImages] = useState<ImageElement[]>([])
 
-  useEffect(() => {
-    console.log({texts})
-    console.log({images})
-  }, [texts, images])
-
   const generateRandomColor = () => {
     const letters = '0123456789ABCDEF'
     let color = '#'

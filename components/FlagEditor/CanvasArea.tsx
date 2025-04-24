@@ -221,6 +221,7 @@ const CanvasArea = ({
           }}
           previewMode={previewMode}
           className="imgWrapper"
+          hasSelectedText={!!selectedTextId}
         />
       ))}
     </AspectRatioBox>

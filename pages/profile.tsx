@@ -14,58 +14,92 @@ const Container = styled.div`
   border-radius: 12px;
 `;
 
-const Title = styled.h2`
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: white;
+const FormWrapper = styled.div`
+  background-color: #1e293b; /* fondo dark */
+  padding: 2rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+`;
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 `;
 
 const FieldGroup = styled.div`
-  margin-bottom: 1rem;
-  color: white;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Label = styled.label`
-  display: block;
   font-weight: 600;
-  margin-bottom: 0.25rem;
-  color: white;
+  margin-bottom: 0.5rem;
+  color: #f1f5f9;
 `;
 
 const Input = styled.input<{ $editing?: boolean }>`
-  padding: 0.75rem;
-  width: 100%;
+  padding: 0.75rem 1rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  color: ${(props) => (props.$editing ? 'black' : 'white')};
-  background-color: ${(props) => (props.$editing ? 'white' : 'transparent')};
+  border: 1px solid #94a3b8;
+  background-color: ${(props) => (props.$editing ? '#0f172a' : '#0f172a')};
+  color: #f8fafc;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+  }
 `;
 
 const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 `;
 
-const Button = styled.button`
+const Button = styled.button<{ variant?: 'cancel' | 'delete' }>`
   padding: 0.75rem 1.25rem;
-  border: none;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  background-color: #3b82f6;
-  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+
+  background-color: ${(props) =>
+    props.variant === 'cancel'
+      ? '#e5e7eb'
+      : props.variant === 'delete'
+      ? '#ef4444'
+      : '#3b82f6'};
+
+  color: ${(props) =>
+    props.variant === 'cancel' ? '#1f2937' : '#ffffff'};
 
   &:hover {
-    background-color: #2563eb;
-  }
-
-  &[data-variant='cancel'] {
-    background-color: #e5e7eb;
-    color: #1f2937;
+    background-color: ${(props) =>
+      props.variant === 'cancel'
+        ? '#f3f4f6'
+        : props.variant === 'delete'
+        ? '#dc2626'
+        : '#2563eb'};
   }
 `;
+
+const Title = styled.h2`
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: white;
+`;
+
 
 const ProfilePage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -152,6 +186,13 @@ const ProfilePage = () => {
       toast.error('Error al actualizar perfil');
     }
   };
+    // Asegura que layerColors siempre sea un array válido
+  const parsedLayerColors = Array.isArray(design?.layerColors)
+    ? design.layerColors
+    : typeof design?.layerColors === 'string'
+    ? JSON.parse(design.layerColors)
+    : [];
+
 
   if (!formData) return null;
 
@@ -166,11 +207,12 @@ const ProfilePage = () => {
             templateName={design.templateName}
             texts={design.texts || []}
             images={design.images || []}
-            layerColors={design.layerColors} 
+            layerColors={parsedLayerColors} 
           />
         )}
 
-        <form>
+      <FormWrapper>
+        <StyledForm>
           <FieldGroup>
             <Label>Email</Label>
             <Input value={formData.email} disabled />
@@ -263,8 +305,8 @@ const ProfilePage = () => {
                   </>
               )}
               </ButtonRow>
-
-        </form>
+            </StyledForm>
+          </FormWrapper>
       </Container>
     </>
   );

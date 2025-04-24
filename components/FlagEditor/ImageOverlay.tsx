@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { useModal } from '../../context/ModalContext';
 
-const Wrapper = styled.div<{ x: number; y: number; size: number; previewMode: boolean }>`
+const Wrapper = styled.div<{ x: number; y: number; size: number; previewMode: boolean; hasSelectedText: boolean; }>`
   position: absolute;
   top: ${(p) => p.y * 100}%;
   left: ${(p) => p.x * 100}%;
@@ -10,7 +11,7 @@ const Wrapper = styled.div<{ x: number; y: number; size: number; previewMode: bo
   height: ${(p) => (p.previewMode ? p.size * 0.8 : p.size)}px;
   cursor: move;
   user-select: none;
-  z-index: 12;
+  z-index: ${(p) => (p.hasSelectedText ? 10 : 12)};
 `;
 
 const Img = styled.img<{ tint: string }>`
@@ -65,6 +66,7 @@ type ImageOverlayProps = {
   setSelected: () => void;
   previewMode: boolean;
   className: string;
+  hasSelectedText: boolean;
 };
 
 const ImageOverlay = ({
@@ -74,11 +76,13 @@ const ImageOverlay = ({
   selected,
   setSelected,
   previewMode,
-  className
+  className,
+  hasSelectedText
 }: ImageOverlayProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { isModalOpen } = useModal();
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -111,6 +115,7 @@ const ImageOverlay = ({
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      if(isModalOpen) return;
       if (selected && (e.key === 'Delete' || e.key === 'Backspace')) {
         e.preventDefault();
         onDelete();
@@ -119,9 +124,7 @@ const ImageOverlay = ({
 
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [selected]);
-
-  console.log("IMAGE COLOR: ", image.color)
+  }, [selected, isModalOpen]);
 
   return (
     <Wrapper
@@ -136,6 +139,7 @@ const ImageOverlay = ({
       previewMode={previewMode}
       style={{ border: selected ? '1px dashed black' : 'none' }}
       className={className}
+      hasSelectedText={hasSelectedText}
     >
 <ColoredImage src={image.src} color={image.color} />
 {selected && <Resizer onMouseDown={() => setIsResizing(true)} />}

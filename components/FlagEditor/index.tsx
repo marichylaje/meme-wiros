@@ -126,25 +126,6 @@ const FlagEditor = ({
     if (recent.length > 0) setColor(recent[0]);
   }, [templateName, sides]);
   
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isModalOpen) return;
-      if (!/^[1-9]$/.test(e.key)) return;
-      const index = parseInt(e.key, 10) - 1;
-      if (index < sides) {
-        const updated = [...layerColors];
-        updated[index] = color;
-        setLayerColors(updated);
-        updateRecentColors(color);
-        setSelectedLayer(index);
-        setLastSelectedTarget('layer');
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [color, layerColors, sides, isModalOpen]);
-
   const applyColor = () => {
     if (lastSelectedTarget === 'text' && selectedTextId) {
       setTexts((prev) =>
