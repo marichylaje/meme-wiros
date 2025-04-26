@@ -147,10 +147,7 @@ const CanvasArea = ({
         const classes = Array.from(target.classList);
         const clickedOnCanvasArea = classes.some(cls => cls.includes("CanvasArea"));
 
-        console.log("no")
-
         if (clickedOnCanvasArea) {
-          console.log("HERE")
           setSelectedTextId?.(null);
           setSelectedImageId?.(null);
           setLastSelectedTarget?.(null);
