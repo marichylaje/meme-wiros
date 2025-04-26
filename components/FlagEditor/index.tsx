@@ -89,6 +89,11 @@ const FlagEditor = ({
 
   const skipReset = useRef(false);
 
+  function capitalizeFirstLetter(str: string) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   useEffect(() => {
     if (skipReset.current) {
       skipReset.current = false;
@@ -96,7 +101,7 @@ const FlagEditor = ({
     }
   
     // si ya tenemos colores por template, los usamos
-    const defaultFromTemplate = templateDefaultColors[templateName] || templateDefaultColors[templateName.toLowerCase()];
+    const defaultFromTemplate = templateDefaultColors[templateName] || templateDefaultColors[capitalizeFirstLetter(templateName)];
     console.log({templateDefaultColors})
     console.log({defaultFromTemplate})
     console.log({templateName})
