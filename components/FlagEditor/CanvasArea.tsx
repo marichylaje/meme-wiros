@@ -142,6 +142,20 @@ const CanvasArea = ({
       onDrop={handleDrop}
       style={{ ...style }}
       className={className}
+      onClick={(e) => {
+        const target = e.target as HTMLElement;
+        const classes = Array.from(target.classList);
+        const clickedOnCanvasArea = classes.some(cls => cls.includes("CanvasArea"));
+
+        console.log("no")
+
+        if (clickedOnCanvasArea) {
+          console.log("HERE")
+          setSelectedTextId?.(null);
+          setSelectedImageId?.(null);
+          setLastSelectedTarget?.(null);
+        }
+      }}
     >
       {Array.from({ length: sides }, (_, index) => {
         const layerColor = effectiveColors[index];

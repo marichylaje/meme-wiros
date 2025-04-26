@@ -126,27 +126,12 @@ const ImageOverlay = ({
       setIsResizing?.(false);
     };
 
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-
-      if (target.closest('button')) {
-        return;
-      }
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setIsResizing?.(false);
-        setSelected?.();
-        setSelectedImageId?.(null)
-      }
-    };
-
     window.addEventListener('mousemove', handleGlobalMouseMove);
     window.addEventListener('mouseup', handleGlobalMouseUp);
-    window.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
-      window.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isDragging, isResizing, image.size, previewMode]);
 
