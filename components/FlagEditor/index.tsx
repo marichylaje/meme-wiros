@@ -97,7 +97,10 @@ const FlagEditor = ({
   
     // si ya tenemos colores por template, los usamos
     const defaultFromTemplate = templateDefaultColors[templateName || templateName.toLowerCase()];
+    console.log({templateDefaultColors})
     console.log({defaultFromTemplate})
+    console.log({templateName})
+    console.log(templateName.toLowerCase())
     if (defaultFromTemplate && defaultFromTemplate.length) {
       setLayerColors(defaultFromTemplate);
       setSelectedLayer(0);
