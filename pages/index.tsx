@@ -143,7 +143,7 @@ const HomePage = () => {
 
       const templatesWithPreviews = data.map((t: any) => ({
         ...t,
-        preview: `/templates/${t.name}/example.png`,
+        preview: `/templates/${capitalizeFirstLetter(t.name)}/example.png`,
       }))
 
       setTemplates(templatesWithPreviews)
@@ -175,7 +175,7 @@ const HomePage = () => {
   }, [])
 
   const handleTemplateChange = (templateName: string) => {
-    const selected = templates.find((t) => t.name === capitalizeFirstLetter(templateName))
+    const selected = templates.find((t) => capitalizeFirstLetter(t.name) === capitalizeFirstLetter(templateName))
     if (!selected) return
 
     setCurrentTemplateName(selected.name)
@@ -247,7 +247,7 @@ const HomePage = () => {
       const data = await res.json()
 
       setCurrentTemplateName(capitalizeFirstLetter(data.templateName))
-      const template = templates.find(t => t.name === capitalizeFirstLetter(data.templateName))
+      const template = templates.find(t => capitalizeFirstLetter(t.name) === capitalizeFirstLetter(data.templateName))
       if (template) setCurrentSides(template.sides)
 
       setLayerColors(JSON.parse(data.layerColors))

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { capitalizeFirstLetter } from '../utils/capitalize';
 
 const TemplateButton = styled.button<{ active: boolean }>`
   width: 100%;
@@ -47,16 +48,16 @@ const TemplatesList = ({ templates, currentTemplate, onTemplateChange }: Templat
             return match ? parseInt(match[0], 10) : Infinity; // sin número = va al final
           };
 
-          return getNumber(a.name) - getNumber(b.name);
+          return getNumber(capitalizeFirstLetter(a.name)) - getNumber(capitalizeFirstLetter(b.name));
         })
         .map((template) => (
           <TemplateButton
-            key={template.name}
-            active={currentTemplate === template.name}
-            onClick={() => onTemplateChange(template.name)}
+            key={capitalizeFirstLetter(template.name)}
+            active={currentTemplate === capitalizeFirstLetter(template.name)}
+            onClick={() => onTemplateChange(capitalizeFirstLetter(template.name))}
           >
-            <img src={template.preview} alt={template.name} />
-            <span>{template.name}</span>
+            <img src={template.preview} alt={capitalizeFirstLetter(template.name)} />
+            <span>{capitalizeFirstLetter(template.name)}</span>
           </TemplateButton>
       ))}
     </>
