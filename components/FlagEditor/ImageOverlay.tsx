@@ -17,7 +17,7 @@ const Wrapper = styled.div<{
   height: ${(p) => (p.previewMode ? p.size * 0.8 : p.size)}px;
   cursor: move;
   user-select: none;
-  z-index: ${(p) => (p.hasSelectedText ? 10 : 12)};
+  z-index: ${(p) => (p.hasSelectedText ? 10 : 10)};
 `;
 
 const ColoredImage = styled.div<{ src: string; color: string }>`
