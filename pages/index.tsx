@@ -153,17 +153,17 @@ const HomePage = () => {
 
       const initial = templatesWithPreviews[0]
       if (initial) {
-        setCurrentTemplateName(initial.name)
+        setCurrentTemplateName(capitalizeFirstLetter(initial.name))
         setCurrentSides(initial.sides)
 
-        const existing = storedColors[initial.name] || []
+        const existing = storedColors[capitalizeFirstLetter(initial.name)] || []
         const missingCount = initial.sides + 1 - existing.length
         const extraColors = missingCount > 0
           ? Array.from({ length: missingCount }, generateRandomColor)
           : []
 
         const finalColors = [...existing, ...extraColors]
-        const updatedColors = { ...storedColors, [initial.name]: finalColors }
+        const updatedColors = { ...storedColors, [capitalizeFirstLetter(initial.name)]: finalColors }
 
         setTemplateColors(updatedColors)
         setLayerColors(finalColors.slice(0, initial.sides + 1))

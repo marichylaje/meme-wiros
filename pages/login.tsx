@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
+import { capitalizeFirstLetter } from '../utils/capitalize'
 
 const Wrapper = styled.div`
   max-width: 400px;
@@ -44,7 +45,7 @@ export default function LoginPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setFormData(prev => ({ ...prev, [capitalizeFirstLetter(name)]: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

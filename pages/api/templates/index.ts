@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs';
 import path from 'path';
+import { capitalizeFirstLetter } from '../../../utils/capitalize';
 
 type TemplateInfo = {
   name: string;
@@ -25,7 +26,7 @@ export default function handler(
     const sideImages = files.filter((file) => /^img\d+\.png$/.test(file));
 
     return {
-      name: folder,
+      name: capitalizeFirstLetter(folder),
       sides: sideImages.length,
     };
   });
