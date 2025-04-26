@@ -87,7 +87,7 @@ const CanvasArea = ({
   className,
   layerColors
 }: CanvasAreaProps) => {
-  const defaultColors = templateDefaultColors[templateName] || [];
+  const defaultColors = templateDefaultColors[templateName || templateName.toLowerCase()] || [];
   const effectiveColors = layerColors.length ? layerColors : defaultColors;
   const boxRef = useRef<HTMLDivElement>(null);
 

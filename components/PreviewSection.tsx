@@ -1,7 +1,6 @@
 // src/components/PreviewSection.tsx
 import styled from 'styled-components';
 import CanvasArea from './FlagEditor/CanvasArea';
-import { templateDefaultColors } from '../lib/templateColors';
 
 const PreviewContainer = styled.div`
   display: flex;
