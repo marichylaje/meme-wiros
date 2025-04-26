@@ -96,7 +96,7 @@ const FlagEditor = ({
     }
   
     // si ya tenemos colores por template, los usamos
-    const defaultFromTemplate = templateDefaultColors[templateName || templateName.toLowerCase()];
+    const defaultFromTemplate = templateDefaultColors[templateName] || templateDefaultColors[templateName.toLowerCase()];
     console.log({templateDefaultColors})
     console.log({defaultFromTemplate})
     console.log({templateName})
