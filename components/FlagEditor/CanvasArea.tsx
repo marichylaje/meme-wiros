@@ -180,7 +180,6 @@ const CanvasArea = ({
             if (previewMode) return;
             setLastSelectedTarget?.('text');
             setSelectedTextId?.(textObj.id);
-            console.log("HERE LAST SELECTED TARGET")
             setSelectedImageId?.(null);
           }}
           onClick={handleTextClick}
