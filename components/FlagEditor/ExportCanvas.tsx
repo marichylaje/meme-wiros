@@ -67,12 +67,6 @@ import React, {
           // Render imágenes coloreadas
           for (const img of images) {
             const size = img.size * assetsResize;
-            console.log("IMG POSITION: ", img.position.y)
-            console.log("IMG name: ", img.src)
-            console.log({HEIGHT})
-            console.log({size})
-            console.log("POSITION: ", img.position.y * (HEIGHT))
-            console.log("------------")
             const isHigherShield = img.src === "/shields/shield1.png"
             await drawMaskedImage(ctx, img.src, img.color, {
               x: img.position.x * (WIDTH + 50) - size / 2,
