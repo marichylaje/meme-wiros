@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import TextOverlay from './TextOverlay';
 import ImageOverlay from './ImageOverlay';
 import { templateDefaultColors } from '../../lib/templateColors';
+import { capitalizeFirstLetter } from '../../utils/capitalize';
 
 const AspectRatioBox = styled.div`
   border-radius: 1rem;
@@ -87,11 +88,6 @@ const CanvasArea = ({
   className,
   layerColors
 }: CanvasAreaProps) => {
-  function capitalizeFirstLetter(str: string) {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
   const defaultColors = templateDefaultColors[templateName] || templateDefaultColors[capitalizeFirstLetter(templateName)];
   const effectiveColors = layerColors.length ? layerColors : defaultColors;
   const boxRef = useRef<HTMLDivElement>(null);

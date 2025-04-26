@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { useDesign } from '../context/DesignContext'
 import Button from '../components/ui/Button'
+import { capitalizeFirstLetter } from '../utils/capitalize'
 
 const PageWrapper = styled.div`
   display: flex;
@@ -174,20 +175,20 @@ const HomePage = () => {
   }, [])
 
   const handleTemplateChange = (templateName: string) => {
-    const selected = templates.find((t) => t.name === templateName)
+    const selected = templates.find((t) => t.name === capitalizeFirstLetter(templateName))
     if (!selected) return
 
     setCurrentTemplateName(selected.name)
     setCurrentSides(selected.sides)
 
-    const existing = templateColors[templateName] || []
+    const existing = templateColors[capitalizeFirstLetter(templateName)] || []
     const missingCount = selected.sides + 1 - existing.length
     const extraColors = missingCount > 0
       ? Array.from({ length: missingCount }, generateRandomColor)
       : []
 
     const finalColors = [...existing, ...extraColors]
-    const updated = { ...templateColors, [templateName]: finalColors }
+    const updated = { ...templateColors, [capitalizeFirstLetter(templateName)]: finalColors }
 
     setTemplateColors(updated)
     setLayerColors(finalColors.slice(0, selected.sides + 1))
@@ -214,7 +215,7 @@ const HomePage = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          templateName: currentTemplateName,
+          templateName: capitalizeFirstLetter(currentTemplateName),
           layerColors,
           texts,
           images
@@ -245,8 +246,8 @@ const HomePage = () => {
 
       const data = await res.json()
 
-      setCurrentTemplateName(data.templateName)
-      const template = templates.find(t => t.name === data.templateName)
+      setCurrentTemplateName(capitalizeFirstLetter(data.templateName))
+      const template = templates.find(t => t.name === capitalizeFirstLetter(data.templateName))
       if (template) setCurrentSides(template.sides)
 
       setLayerColors(JSON.parse(data.layerColors))
@@ -254,7 +255,7 @@ const HomePage = () => {
       setImages(data.images || []);
       
       setSavedDesign({
-        templateName: data.templateName,
+        templateName: capitalizeFirstLetter(data.templateName),
         layerColors: JSON.parse(data.layerColors),
       })
 
@@ -271,7 +272,7 @@ const HomePage = () => {
         <MainContainer>
           <Content>
             <FlagEditor
-              templateName={currentTemplateName}
+              templateName={capitalizeFirstLetter(currentTemplateName)}
               sides={currentSides}
               layerColors={layerColors}
               setLayerColors={setLayerColors}
@@ -287,7 +288,7 @@ const HomePage = () => {
             </FloatingSaveButton>
 
             <PreviewSection
-              templateName={currentTemplateName}
+              templateName={capitalizeFirstLetter(currentTemplateName)}
               texts={texts}
               images={images}
               layerColors={layerColors} // 👈 nuevo prop

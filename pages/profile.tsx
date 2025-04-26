@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import PreviewSection from '../components/PreviewSection';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
+import { capitalizeFirstLetter } from '../utils/capitalize';
 
 const Container = styled.div`
   max-width: 900px;
@@ -204,7 +205,7 @@ const ProfilePage = () => {
 
         {design && (
           <PreviewSection
-            templateName={design.templateName}
+            templateName={capitalizeFirstLetter(design.templateName)}
             texts={design.texts || []}
             images={design.images || []}
             layerColors={parsedLayerColors} 

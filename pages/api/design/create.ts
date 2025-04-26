@@ -2,6 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken'
+import { capitalizeFirstLetter } from '../../../utils/capitalize'
 
 const prisma = new PrismaClient()
 const JWT_SECRET = process.env.JWT_SECRET!
@@ -36,14 +37,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const design = await prisma.design.upsert({
       where: { userId },
       update: {
-        templateName,
+        templateName: capitalizeFirstLetter(templateName),
         layerColors: JSON.stringify(layerColors),
         texts,    // 👈 esto ya es JSON
         images    // 👈 esto también
       },
       create: {
         userId,
-        templateName,
+        templateName :capitalizeFirstLetter(templateName),
         layerColors: JSON.stringify(layerColors),
         texts,
         images

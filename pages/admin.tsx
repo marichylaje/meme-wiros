@@ -8,6 +8,7 @@ import CanvasArea from '../components/FlagEditor/CanvasArea'
 import domtoimage from 'dom-to-image-more'
 import { useRef } from 'react'
 import ExportCanvas from '../components/FlagEditor/ExportCanvas'
+import { capitalizeFirstLetter } from '../utils/capitalize'
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -298,7 +299,7 @@ const AdminPage = () => {
             </div>
 
             <CanvasArea
-                templateName={selectedUser.design.templateName}
+                templateName={capitalizeFirstLetter(selectedUser.design.templateName)}
                 sides={JSON.parse(selectedUser.design.layerColors).length}
                 layerColors={JSON.parse(selectedUser.design.layerColors)}
                 texts={(selectedUser.design.texts || '[]')}
@@ -308,7 +309,7 @@ const AdminPage = () => {
 
             <ExportCanvas
               ref={canvasRef}
-              templateName={selectedUser.design.templateName}
+              templateName={capitalizeFirstLetter(selectedUser.design.templateName)}
               sides={JSON.parse(selectedUser.design.layerColors).length}
               layerColors={JSON.parse(selectedUser.design.layerColors)}
               texts={selectedUser.design.texts || []}

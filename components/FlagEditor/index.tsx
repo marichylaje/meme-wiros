@@ -8,6 +8,7 @@ import ModalTexto from './ModalTexto';
 import Gallery from './Gallery';
 import { useModal } from '../../context/ModalContext';
 import { templateDefaultColors } from '../../lib/templateColors';
+import { capitalizeFirstLetter } from '../../utils/capitalize';
 
 const EditorWrapper = styled.div`
   display: flex;
@@ -89,11 +90,6 @@ const FlagEditor = ({
 
   const skipReset = useRef(false);
 
-  function capitalizeFirstLetter(str: string) {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
   useEffect(() => {
     if (skipReset.current) {
       skipReset.current = false;
@@ -102,10 +98,7 @@ const FlagEditor = ({
   
     // si ya tenemos colores por template, los usamos
     const defaultFromTemplate = templateDefaultColors[templateName] || templateDefaultColors[capitalizeFirstLetter(templateName)];
-    console.log({templateDefaultColors})
-    console.log({defaultFromTemplate})
-    console.log({templateName})
-    console.log(templateName.toLowerCase())
+
     if (defaultFromTemplate && defaultFromTemplate.length) {
       setLayerColors(defaultFromTemplate);
       setSelectedLayer(0);
@@ -274,7 +267,7 @@ const FlagEditor = ({
 
         <CanvasWrapper>
           <CanvasArea
-            templateName={templateName}
+            templateName={capitalizeFirstLetter(templateName)}
             sides={sides}
             layerColors={layerColors}
             texts={texts}

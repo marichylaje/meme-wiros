@@ -4,6 +4,7 @@ import React, {
     forwardRef,
     useImperativeHandle
   } from 'react';
+import { capitalizeFirstLetter } from '../../utils/capitalize';
   
   type ExportCanvasProps = {
     templateName: string;
@@ -51,8 +52,8 @@ import React, {
   
             const maskUrl =
               i === sides
-                ? `/templates/${templateName}/fullimg.png`
-                : `/templates/${templateName}/img${i + 1}.png`;
+                ? `/templates/${capitalizeFirstLetter(templateName)}/fullimg.png`
+                : `/templates/${capitalizeFirstLetter(templateName)}/img${i + 1}.png`;
   
             await drawMaskedImage(ctx, maskUrl, color, {
               x: 0,
