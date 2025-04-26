@@ -20,14 +20,6 @@ const Wrapper = styled.div<{
   z-index: ${(p) => (p.hasSelectedText ? 10 : 12)};
 `;
 
-const Img = styled.img<{ tint: string }>`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-  filter: ${(props) => `drop-shadow(0 0 0 ${props.tint}) saturate(1000%)`};
-`;
-
 const ColoredImage = styled.div<{ src: string; color: string }>`
   width: 100%;
   height: 100%;
@@ -72,6 +64,7 @@ type ImageOverlayProps = {
   previewMode: boolean;
   className: string;
   hasSelectedText: boolean;
+  setSelectedImageId: any;
 };
 
 const ImageOverlay = ({
@@ -82,7 +75,8 @@ const ImageOverlay = ({
   setSelected,
   previewMode,
   className,
-  hasSelectedText
+  hasSelectedText,
+  setSelectedImageId
 }: ImageOverlayProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -91,8 +85,8 @@ const ImageOverlay = ({
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!isResizing) setIsDragging(true);
-    setSelected();
+    if (!isResizing) setIsDragging?.(true);
+    setSelected?.();
   };
 
   useEffect(() => {
@@ -128,15 +122,31 @@ const ImageOverlay = ({
     };
 
     const handleGlobalMouseUp = () => {
-      setIsDragging(false);
-      setIsResizing(false);
+      setIsDragging?.(false);
+      setIsResizing?.(false);
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+
+      if (target.closest('button')) {
+        return;
+      }
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsResizing?.(false);
+        setSelected?.();
+        setSelectedImageId?.(null)
+      }
     };
 
     window.addEventListener('mousemove', handleGlobalMouseMove);
     window.addEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isDragging, isResizing, image.size, previewMode]);
 

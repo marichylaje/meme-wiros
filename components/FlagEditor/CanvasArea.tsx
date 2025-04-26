@@ -65,7 +65,7 @@ type CanvasAreaProps = {
   previewMode?: boolean;
   style?: any;
   selectedImageId?: string | null;
-  setSelectedImageId?: (id: string | null) => void;
+  setSelectedImageId?: any;
   className?: string;
   layerColors: string[]; // NEW: override colors
 };
@@ -111,8 +111,8 @@ const CanvasArea = ({
     };
 
     setImages((prev) => [...prev, newImage]);
-    setSelectedImageId(newImage.id);
-    setLastSelectedTarget('image');
+    setSelectedImageId?.(newImage.id);
+    setLastSelectedTarget?.('image');
   };
 
   useEffect(() => {
@@ -120,21 +120,13 @@ const CanvasArea = ({
       if (e.key === 'Delete') {
         if (selectedImageId) {
           setImages((prev) => prev.filter((img) => img.id !== selectedImageId));
-          setSelectedImageId(null);
+          setSelectedImageId?.(null);
         }
       }
     };
     window.addEventListener('keydown', handleDelete);
     return () => window.removeEventListener('keydown', handleDelete);
   }, [selectedImageId]);
-
-  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === boxRef.current) {
-      setSelectedTextId(null);
-      setSelectedImageId(null);
-      setLastSelectedTarget(null);
-    }
-  };
 
   const handleTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
     setTimeout(() => {
@@ -145,7 +137,6 @@ const CanvasArea = ({
   return (
     <AspectRatioBox
       ref={boxRef}
-      onClick={handleCanvasClick}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
       style={{ ...style }}
@@ -187,9 +178,10 @@ const CanvasArea = ({
           strokeWidth={textObj.strokeWidth}
           setLastSelectedTarget={() => {
             if (previewMode) return;
-            setLastSelectedTarget('text');
-            setSelectedTextId(textObj.id);
-            setSelectedImageId(null);
+            setLastSelectedTarget?.('text');
+            setSelectedTextId?.(textObj.id);
+            console.log("HERE LAST SELECTED TARGET")
+            setSelectedImageId?.(null);
           }}
           onClick={handleTextClick}
           onDelete={() => setTexts((prev) => prev.filter((t) => t.id !== textObj.id))}
@@ -215,13 +207,14 @@ const CanvasArea = ({
           onDelete={() => setImages((prev) => prev.filter((i) => i.id !== img.id))}
           selected={selectedImageId === img.id}
           setSelected={() => {
-            setSelectedImageId(img.id);
-            setLastSelectedTarget('image');
-            setSelectedTextId(null);
+            setSelectedImageId?.(img.id);
+            setLastSelectedTarget?.('image');
+            setSelectedTextId?.(null);
           }}
           previewMode={previewMode}
           className="imgWrapper"
           hasSelectedText={!!selectedTextId}
+          setSelectedImageId={setSelectedImageId}
         />
       ))}
     </AspectRatioBox>

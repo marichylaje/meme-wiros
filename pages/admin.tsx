@@ -104,7 +104,6 @@ const AdminPage = () => {
     link.href = canvas.toDataURL('image/png');
     link.click();
   };
-  
 
   useEffect(() => {
     if (!user?.admin || !isAuthenticated) {
@@ -300,7 +299,7 @@ const AdminPage = () => {
 
             <CanvasArea
                 templateName={selectedUser.design.templateName}
-                sides={JSON.parse(selectedUser.design.layerColors).length - 1}
+                sides={JSON.parse(selectedUser.design.layerColors).length}
                 layerColors={JSON.parse(selectedUser.design.layerColors)}
                 texts={(selectedUser.design.texts || '[]')}
                 images={(selectedUser.design.images || '[]')}
@@ -310,7 +309,7 @@ const AdminPage = () => {
             <ExportCanvas
               ref={canvasRef}
               templateName={selectedUser.design.templateName}
-              sides={JSON.parse(selectedUser.design.layerColors).length - 1}
+              sides={JSON.parse(selectedUser.design.layerColors).length}
               layerColors={JSON.parse(selectedUser.design.layerColors)}
               texts={selectedUser.design.texts || []}
               images={selectedUser.design.images || []}

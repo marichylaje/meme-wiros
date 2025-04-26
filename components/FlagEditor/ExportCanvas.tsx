@@ -67,10 +67,17 @@ import React, {
           // Render imágenes coloreadas
           for (const img of images) {
             const size = img.size * assetsResize;
+            console.log("IMG POSITION: ", img.position.y)
+            console.log("IMG name: ", img.src)
+            console.log({HEIGHT})
+            console.log({size})
+            console.log("POSITION: ", img.position.y * (HEIGHT))
+            console.log("------------")
             const isHigherShield = img.src === "/shields/shield1.png"
             await drawMaskedImage(ctx, img.src, img.color, {
-              x: img.position.x * WIDTH - size / 2,
-              y: img.position.y * HEIGHT - size / 2 + size / (isHigherShield ? 15 : 9999),
+              x: img.position.x * (WIDTH + 50) - size / 2,
+              y: (img.position.y * HEIGHT) - (size / 2) + (isHigherShield ? 150 : 0),
+              //y: img.position.y * (HEIGHT + 125 + (isHigherShield ? -980 : -500))/* - size / 2 + size / (isHigherShield ? 15 : 9999)*/,
               width: size,
               height: size - (size / (isHigherShield ? 4 : 9999))
             });
@@ -78,9 +85,9 @@ import React, {
   
           // Render textos
           for (const t of texts) {
-            const x = t.position.x * WIDTH;
-            const y = t.position.y * HEIGHT;
-            const fontSize = t.fontSize * (assetsResize + .75);
+            const x = t.position.x * (WIDTH + 50);
+            const y = t.position.y * (HEIGHT + 25);
+            const fontSize = t.fontSize * (assetsResize - .1);
           
             ctx.save();
             ctx.font = `${t.filled ? 'bold' : ''} ${fontSize}px ${t.fontFamily}`;
